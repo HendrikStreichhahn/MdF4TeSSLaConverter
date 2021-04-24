@@ -11,7 +11,7 @@ public:
 	CTeSSLaStreamEntry(CTeSSLaStream* owner, int timeStamp);
 	~CTeSSLaStreamEntry() {};
 	int getTimeStamp() { return mTimeStamp; };
-	std::string toString() { return ""; };
+	virtual std::string toString() { return ""; };
 protected:
 	int mTimeStamp;
 	CTeSSLaStream* mOwner;
@@ -58,17 +58,20 @@ protected:
 class CTeSSLaStreamVoid : public CTeSSLaStream
 {
 public:
+	CTeSSLaStreamVoid(std::string name) : CTeSSLaStream(name) {};
 	void addEntry(CTeSSLaStreamEntryVoid* entry) { this->mvEntries.push_back(entry); };
 };
 
 class CTeSSLaStreamInt : public CTeSSLaStream
 {
 public:
+	CTeSSLaStreamInt(std::string name) : CTeSSLaStream(name) {};
 	void addEntry(CTeSSLaStreamEntryInt* entry) { this->mvEntries.push_back(entry); };
 };
 
 class CTeSSLaStreamFloat : public CTeSSLaStream
 {
 public:
+	CTeSSLaStreamFloat(std::string name) : CTeSSLaStream(name) {};
 	void addEntry(CTeSSLaStreamEntryFloat* entry) { this->mvEntries.push_back(entry); };
 };

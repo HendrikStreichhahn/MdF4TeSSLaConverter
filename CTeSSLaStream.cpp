@@ -14,15 +14,15 @@ CTeSSLaStreamEntry::CTeSSLaStreamEntry(CTeSSLaStream* owner, int timeStamp)
 
 std::string CTeSSLaStreamEntryVoid::toString()
 {
-	return std::to_string(this->getTimeStamp()) + ": " + mOwner->getName() + "= ()";
+	return std::to_string(this->getTimeStamp()) + ": " + mOwner->getName() + " = ()";
 };
 
 std::string CTeSSLaStreamEntryInt::toString()
 {
-	return std::to_string(this->getTimeStamp()) + ": " + mOwner->getName() + "=" + std::to_string(this->getValue());
+	return std::to_string(this->getTimeStamp()) + ": " + mOwner->getName() + " = " + std::to_string(this->getValue());
 };
 
 std::string CTeSSLaStreamEntryFloat::toString()
 {
-	return std::to_string(this->getTimeStamp()) + ": " + mOwner->getName() + "=" + std::to_string(this->getValue());
+	return std::to_string(this->getTimeStamp()) + ": " + mOwner->getName() + " = " + std::to_string(this->getValue());
 };

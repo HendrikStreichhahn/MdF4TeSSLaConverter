@@ -6,8 +6,9 @@ class CTeSSLaTrace
 {
 public:
 	CTeSSLaTrace();
-	void addTrace(CTeSSLaStream* stream) { this->mvStreams.push_back(stream); };
+	void addStream(CTeSSLaStream* stream) { this->mvStreams.push_back(stream); };
 	void printTrace();
+	BOOL exportTrace(std::string filePath);
 protected:
 	std::vector<CTeSSLaStream*> mvStreams;
 private:

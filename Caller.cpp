@@ -13,6 +13,8 @@
 #include <afxwin.h>
 #include <iostream>
 
+#include "CMdf4TeSSLaConverter.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -25,55 +27,67 @@ CWinApp theApp;
 void ReadMDF4Example(void); // forward
 void DLLReadMDF4Example(void);  // forward
 
+int example();
+BOOL converter();
+
 using namespace std;
 
 int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 {
-	cout << "main a" << endl;
+	//return example();
+	converter();
+	return 0;
+}
+
+int example()
+{
 
 	int nRetCode = 0;
 
 	HMODULE hModule = ::GetModuleHandle(NULL);
 
-	cout << "main b" << endl;
-
 	if (hModule != NULL)
-	{
-		// initialize MFC and print and error on failure
-		if (!AfxWinInit(hModule, NULL, ::GetCommandLine(), 0))
 		{
-			cout << "main Error 1" << endl;
-			// TODO: change error code to suit your needs
-			_tprintf(_T("Fatal Error: MFC initialization failed\n"));
-			nRetCode = 1;
+			// initialize MFC and print and error on failure
+			if (!AfxWinInit(hModule, NULL, ::GetCommandLine(), 0))
+			{
+				cout << "main Error 1" << endl;
+				// TODO: change error code to suit your needs
+				_tprintf(_T("Fatal Error: MFC initialization failed\n"));
+				nRetCode = 1;
+			}
+			else
+			{
+
+				// Test MDF4Reader (DLL)
+				DLLReadMDF4Example();
+				//ReadMDF4Example();
+			}
 		}
 		else
 		{
-			// Test MDF4Writer (COM)
-			// WriteMDF4Example();
-
-			// Test MDF4Writer (DLL)
-			cout << "main c" << endl;
-			//DLLWriteMDF4Example();
-
-			// Test MDF4Reader
-			//ReadMDF4Example();
-
-			// Test MDF4Reader (DLL)
-			cout << "main b" << endl;
-			DLLReadMDF4Example();
+			// TODO: change error code to suit your needs
+			_tprintf(_T("Fatal Error: GetModuleHandle failed\n"));
+			nRetCode = 1;
 		}
-	}
-	else
-	{
-		cout << "main error 2" << endl;
-		// TODO: change error code to suit your needs
-		_tprintf(_T("Fatal Error: GetModuleHandle failed\n"));
-		nRetCode = 1;
-	}
 
 	cout << "main end with code: " << nRetCode << endl;
 	return nRetCode;
+}
+
+BOOL converter() 
+{
+	CMdf4TeSSLaConverter* converter = new CMdf4TeSSLaConverter();
+	if (converter->readMdf4File("C:\\Users\\Hendrik Streichhahn\\Desktop\\Test.mf4", 1000))
+		std::cout << "read file Successfully!" << std::endl;
+	else
+	{
+		std::cout << "converter->readMdf4File returned false!" << std::endl;
+		return false;
+	}
+	//converter->printMdf4FileInfo("C:\\Users\\Hendrik Streichhahn\\Desktop\\Test.mf4");
+	converter->exportTeSSLaFile("C:\\Users\\Hendrik Streichhahn\\Desktop\\test.trace");
+	return true;
 }
 
 

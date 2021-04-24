@@ -42,6 +42,9 @@
     <ClInclude Include="CTeSSLaTrace.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CMdf4TeSSLaConverter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -57,6 +60,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CTeSSLaTrace.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CMdf4TeSSLaConverter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

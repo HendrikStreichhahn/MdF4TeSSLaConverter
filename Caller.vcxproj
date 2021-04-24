@@ -212,6 +212,7 @@
     <ClInclude Include="Caller.h" />
     <ClInclude Include="CMdf4Reader.h" />
     <ClInclude Include="CMDF4ReaderLib.h" />
+    <ClInclude Include="CMdf4TeSSLaConverter.h" />
     <ClInclude Include="CTeSSLaStream.h" />
     <ClInclude Include="CTeSSLaTrace.h" />
     <ClInclude Include="Resource.h" />
@@ -221,6 +222,7 @@
   <ItemGroup>
     <ClCompile Include="Caller.cpp" />
     <ClCompile Include="CMDF4ReaderLib.cpp" />
+    <ClCompile Include="CMdf4TeSSLaConverter.cpp" />
     <ClCompile Include="CTeSSLaStream.cpp" />
     <ClCompile Include="CTeSSLaTrace.cpp" />
     <ClCompile Include="stdafx.cpp">
