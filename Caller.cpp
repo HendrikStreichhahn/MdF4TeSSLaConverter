@@ -3,8 +3,6 @@
 
 #include "stdafx.h"
 #include "Caller.h"
-#include "CMDF4Writer.h"
-#include "CMDF4WriterLib.h"
 #include "CMdf4Reader.h"
 #include "CMDF4ReaderLib.h"
 #include <io.h>
@@ -24,9 +22,7 @@
 
 CWinApp theApp;
 
-void WriteMDF4Example(void); // forward
 void ReadMDF4Example(void); // forward
-void DLLWriteMDF4Example(void);  // forward
 void DLLReadMDF4Example(void);  // forward
 
 using namespace std;
@@ -80,176 +76,6 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 	return nRetCode;
 }
 
-BOOL MyCreateSRBlocks(CMDF4Writer* m4, CMDF4WriterLib* pDLL, int iGroup,
-                      double xFactor, double xOffset, // mean x delta and offset
-                      double xmin, double xmax,  // x range of data group
-                      unsigned __int64  nValues) // cg_cycle_count
-{
-  double dt, xrange;
-  ULONG cb = _MAX_PATH-1;
-  DWORD dwFactor=5;
-  DWORD dwSoll[3], nSoll=3; // projected no of intervals in SR block
-  dwSoll[0] = 1000000;
-  dwSoll[1] = 100000;
-  dwSoll[2] = 10000;
-
-  double fPoints;
-  __int64 nPoints;
-  __int64 nPointsToDo[10];
-  xrange = xmax - xmin;
-  if(xrange <= 0.0)
-    return FALSE;
- 
-  memset(nPointsToDo, 0, sizeof(nPointsToDo));
-  int nsr = 0, i=0;
-  fPoints = nValues / dwFactor;
-  if(fPoints < dwSoll[0])
-  {
-    while(i < nSoll && fPoints < dwSoll[i])
-      i++;
-    if(i >= nSoll)
-      return FALSE;
-  }
-  while(i < nSoll)
-    nPointsToDo[nsr++] = dwSoll[i++];
-    
-  for(i=0; i<nsr; i++) if(nPointsToDo[i])
-  {
-    nPoints = nPointsToDo[i];
-    dt = xrange / nPoints;
-		if (m4)
-			m4->CreateSRBlock( iGroup, dt, xrange, xFactor, xOffset);
-		else if (pDLL)
-			pDLL->CreateSRBlock(iGroup, dt, xrange, xFactor, xOffset);
-	}
-  return TRUE;
-}
-
-// enumeration for member cn_data_type
-#define CN_D_UINT_LE   0  // Unsigned Integer LE Byte Order
-#define CN_D_SINT_LE   2  // Signed Integer LE Byte Order
-#define CN_D_FLOAT_LE  4  // Float (IEEE 754) LE Byte Order
-
-
-void WriteMDF4Example(void)
-{
-	CMDF4Writer m4;
-	long idGroup[2], idSignal[16], i;
-	__int64 i64N =  10000, n;
-	double xmin, xmax, xrange, x, xoffset = 0;
-	CString str, str1;
-
-	CoInitializeEx(NULL, 0); // don't forget this
-
-	//if (!m4.CreateDispatch(_T("{891BCB49-095B-417C-9235-564194E85533}")))
-	if (!m4.CreateDispatch(_T("MDF4WriterLib.1")))
-	{
-		DWORD dwErr = GetLastError();
-		_tprintf(_T("Cannot create dispatch interface\n"));
-		return;
-	}
-
-	// if file exists, delete it first
-	if (_taccess("C:\\Temp\\M4Test.mf4",0)==0)
-		_tunlink("C:\\Temp\\M4Test.mf4");
-	// Set the file name before you create the file
-	m4.put_strPathName( "C:\\Temp\\M4Test.mf4");
-	m4.CreateMDF4( "Caller", "Lego", "1.0", "No comment", 410); // Version MDF4.10
-
-	// Add a group with an equidistant, virtual time signal with 10 Hz sampling rate and 10 s offset
-	m4.AddGroup64( "Group 1 Test", i64N, &idGroup[0]);
-	m4.AddTimeInfo( idGroup[0], "Time", "s", 0.1, 10);
-	// Square wave, unsigned int 8 bit
-	m4.AddSignal( idGroup[0], "Square", "Signal with square wave",     CN_D_UINT_LE, -1, 8,   "V", 1.0, 0.0, 0, 0.0, -1, &idSignal[0]);
-	// Sawtooth wave, signed int 8 bit
-	m4.AddSignal( idGroup[0], "Sawtooth", "Signal with sawtooth wave", CN_D_SINT_LE, -1, 8,   "A", 1.0, 0.0, 0, 0.0, -1, &idSignal[1]);
-
-  // Rampe, double 
-	m4.AddSignal( idGroup[0], "Ramp", "Signal with ramp wave",         CN_D_FLOAT_LE, -1, 64, "°C", 1.0, 0.0, 0, 0.0, -1, &idSignal[2]);
-
-	// Add 3 Bit Signals
-	for (i=0; i<3; i++)
-	{
-		str.Format("Bit%d",i);
-		m4.AddSignal( idGroup[0], str, "Bit Signal",         CN_D_UINT_LE, -1, i+1, "-", 1.0, 0.0, 0, 0.0, -1, &idSignal[i+3]);
-		if (i==0)
-			str = _T("0=ON|1=OFF|");
-		else if (i==1)
-			str = _T("0=ON|1=OFF|2=BOTH|3=missing");
-		else
-			str = _T("0=an|1=aus|2=uhu");
-
-		m4.SetSignalDiscrete( idGroup[0], idSignal[i+3], 1, str);
-	}
-
-  str = _T("0=Wert0");
-  for(i=0; i<2048; i++)
-  {
-    str1.Format(_T("|%d=Wert%d"), i, i);
-    str += str1;
-  }
-  m4.SetSignalDiscrete(idGroup[0], idSignal[2], 1, str);
-
-#if 0
-	// Add a group with a non-equidistant time signal with approx. 10 Hz sampling rate and 0 s offset
-	m4.AddGroup64( "Group 2 Test", i64N, &idGroup[1]);
-	m4.AddTimeSignal( idGroup[1], "Time",CN_D_FLOAT_LE, -1, 64, "s", 1.0, 0.0, &idSignal[6]);
-	m4.AddSignal( idGroup[1], "Square", "Signal with square wave",     CN_D_UINT_LE, -1,  8, "V", 1.0,  0.0, 1, -100.0, -1, &idSignal[7]);
-	m4.AddSignal( idGroup[1], "Sawtooth", "Signal with sawtooth wave", CN_D_SINT_LE, -1,  8, "A", 0.1, -5.0, 1,    0.0, -1, &idSignal[8]);
-	m4.AddSignal( idGroup[1], "Ramp", "Signal with ramp wave",         CN_D_FLOAT_LE,-1, 64, "m", 1.0,  0.0, 1,    0.0, -1, &idSignal[9]);
-#endif
-
-	// Now create the groups and channels in the MDF4 file 
-	m4.MakeGroups();
-	// After this, do not change/add groups or signals
-
-	// Write the data
-
-	for (i=0; i<i64N; i++)
-	{
-		// Group 1
-		m4.SetSignalValue( idGroup[0], idSignal[0], i<i64N/2 ? 0.0 : 255.0, 0);
-		m4.SetSignalValue( idGroup[0], idSignal[1], (double)(i%10)-5, 0);
-    m4.SetSignalValue (idGroup[0], idSignal[2], (double)i, 0);
-		m4.SetSignalValue( idGroup[0], idSignal[3], (double)(i & 1), 0);
-		m4.SetSignalValue( idGroup[0], idSignal[4], (double)(i % 3), 0);
-		m4.SetSignalValue( idGroup[0], idSignal[5], (double)(i % 4), 0);
-
-		// Simple Method: Write the record
-		m4.WriteRecord( idGroup[0] );
-
-#if 0
-		// Group 2
-		x = (double)i/10 + (double)(rand()-16384)/1638400.;
-		if (i > i64N/2 && xoffset == 0)
-			xoffset = x;
-		x += xoffset;
-		if (i==0)
-			xmin = x;
-		else
-			xmax = x;
-		m4.SetSignalValue( idGroup[1], idSignal[6], x, 0);
-		int noval = 0;
-		if (i == i64N/2)
-			noval = 1;
-		m4.SetSignalValue( idGroup[1], idSignal[7], i<i64N/2 ? 0.0 : 255.0, noval);
-		m4.SetSignalValue( idGroup[1], idSignal[8], (double)(i%10)-5, noval);
-		m4.SetSignalValue( idGroup[1], idSignal[9], (double)i, noval);
-		m4.WriteRecord( idGroup[1] );
-#endif
-	}
-
-	// Flush records, close open data blocks
-	m4.FlushGroup( idGroup[0] );
-	//m4.FlushGroup( idGroup[1] );
-
-	// Close the file
-	m4.Close();
-
-	MyCreateSRBlocks(&m4, NULL, idGroup[0], 0.1, 10.0, // mean x delta and offset
-                   10.0, 10.0 + i64N * 0.1,  // x range of data group
-                   i64N);
-}
 
 
 // Find the DLL if it was registered as a COM object:
@@ -277,103 +103,7 @@ BOOL FindCOMLib(TCHAR *pszPath, BOOL bReader = FALSE) // size of pszPath is _MAX
 	return FALSE;
 }
 
-void DLLWriteMDF4Example(void)
-{
-	// Load the tool as ordinary DLL rather than a COM object.
-	// However, we use the COM registration to find the DLL:
-	TCHAR szDLLPath[_MAX_PATH];
-	if (!FindCOMLib(szDLLPath))
-	{
-		printf("DLL not found\n");
-		return;
-	}
-	CMDF4WriterLib m4(szDLLPath);
-	INT_PTR idGroup[2];
-	LONG idSignal[16], i;
-	__int64 i64N = 10000, n;
-	double xmin, xmax, xrange, x, xoffset = 0;
-	CStringW str, str1;
-	if (!m4.IsValid())
-	{
-		_tprintf(_T("DLL not loaded\n"));
-		return;
-	}
-	m4.InitDll();
 
-	// if file exists, delete it first
-	if (_taccess("C:\\Temp\\M4Test.mf4", 0) == 0)
-		_tunlink("C:\\Temp\\M4Test.mf4");
-	// Set the file name before you create the file
-	m4.SetPathName(L"C:\\Temp\\M4Test.mf4");
-	m4.CreateMDF4(L"Caller", L"Lego", L"1.0", L"No comment", 410); // Version MDF4.10
-
-	// Add a group with an equidistant, virtual time signal with 10 Hz sampling rate and 10 s offset
-	m4.AddGroup64(L"Group 1 Test", i64N, &idGroup[0]);
-	m4.AddTimeInfo(idGroup[0], L"Time", L"s", 0.1, 10);
-	// Square wave, unsigned int 8 bit
-	m4.AddSignal(idGroup[0], L"Square", L"Signal with square wave", CN_D_FLOAT_LE, -1, 64, L"V", 1.0, 0.0, 0, 0.0, -1, &idSignal[0]);
-	// Sawtooth wave, signed int 8 bit
-	m4.AddSignal(idGroup[0], L"Sawtooth", L"Signal with sawtooth wave", CN_D_FLOAT_LE, -1, 64, L"A", 1.0, 0.0, 0, 0.0, -1, &idSignal[1]);
-
-	// Rampe, double 
-	m4.AddSignal(idGroup[0], L"Ramp", L"Signal with ramp wave", CN_D_FLOAT_LE, -1, 64, L"°C", 1.0, 0.0, 0, 0.0, -1, &idSignal[2]);
-
-	// Add 3 Bit Signals
-	for (i = 0; i < 3; i++)
-	{
-		str.Format(L"Bit%d", i);
-		m4.AddSignal(idGroup[0], str, L"Bit Signal", CN_D_FLOAT_LE, -1, 64, L"-", 1.0, 0.0, 0, 0.0, -1, &idSignal[i + 3]);
-		if (i == 0)
-			str = L"0=ON|1=OFF|";
-		else if (i == 1)
-			str = L"0=ON|1=OFF|2=BOTH|3=missing";
-		else
-			str = L"0=an|1=aus|2=uhu";
-
-		m4.SetSignalDiscrete(idGroup[0], idSignal[i + 3], 1, str);
-	}
-
-	str = L"0=Wert0";
-	for (i = 0; i < 2048; i++)
-	{
-		str1.Format(L"|%d=Wert%d", i, i);
-		str += str1;
-	}
-	m4.SetSignalDiscrete(idGroup[0], idSignal[2], 1, str);
-
-	// Now create the groups and channels in the MDF4 file 
-	m4.MakeGroups();
-	// After this, do not change/add groups or signals
-
-	// Generate the data
-	void *pBuffer = malloc(i64N * sizeof(double) * 6);
-	double *ptr = (double *)pBuffer;
-	for (i = 0; i < i64N; i++)
-	{
-		// Group 1
-		*ptr++ = i < i64N / 2 ? 0.0 : 255.0, 0;
-		*ptr++ = (double)(i % 10) - 5, 0;
-		*ptr++ = (double)i, 0;
-		*ptr++ = (double)(i & 1), 0;
-		*ptr++ = (double)(i % 3), 0;
-		*ptr++ = (double)(i % 4), 0;
-	}
-
-	// Write the whole buffer:
-	m4.WriteRecords(idGroup[0], pBuffer, i64N);
-
-	// Flush records, close open data blocks
-	m4.FlushGroup(idGroup[0]);
-	//m4.FlushGroup( idGroup[1] );
-
-	// Close the file
-	m4.Close();
-
-	MyCreateSRBlocks(NULL, &m4, idGroup[0], 0.1, 10.0, // mean x delta and offset
-		10.0, 10.0 + i64N * 0.1,  // x range of data group
-		i64N);
-	m4.ExitDll();
-}
 
 // Block types
 #define ID_HEADER       1

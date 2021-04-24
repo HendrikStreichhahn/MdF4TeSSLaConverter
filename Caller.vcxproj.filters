@@ -33,13 +33,10 @@
     <ClInclude Include="CMdf4Reader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CMDF4Writer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CMDF4WriterLib.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CMDF4ReaderLib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CTeSSLaStream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -50,10 +47,10 @@
     <ClCompile Include="Caller.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CMDF4WriterLib.cpp">
+    <ClCompile Include="CMDF4ReaderLib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CMDF4ReaderLib.cpp">
+    <ClCompile Include="CTeSSLaStream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

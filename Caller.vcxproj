@@ -212,8 +212,7 @@
     <ClInclude Include="Caller.h" />
     <ClInclude Include="CMdf4Reader.h" />
     <ClInclude Include="CMDF4ReaderLib.h" />
-    <ClInclude Include="CMDF4Writer.h" />
-    <ClInclude Include="CMDF4WriterLib.h" />
+    <ClInclude Include="CTeSSLaStream.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -221,7 +220,7 @@
   <ItemGroup>
     <ClCompile Include="Caller.cpp" />
     <ClCompile Include="CMDF4ReaderLib.cpp" />
-    <ClCompile Include="CMDF4WriterLib.cpp" />
+    <ClCompile Include="CTeSSLaStream.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
