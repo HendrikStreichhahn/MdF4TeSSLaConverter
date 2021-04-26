@@ -1,3 +1,5 @@
+#pragma once
+
 #include "stdafx.h"
 #include "CTeSSLaTrace.h"
 
@@ -9,6 +11,11 @@ CTeSSLaTrace::CTeSSLaTrace()
 {
 
 }
+
+void CTeSSLaTrace::addStream(CTeSSLaStream* stream) 
+{
+	this->mvStreams.push_back(stream); 
+};
 
 bool CTeSSLaTrace::notAllNegative(std::vector<int> currentIndices)
 {

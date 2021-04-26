@@ -3,6 +3,8 @@
 // Used by Caller.rc
 //
 
+#pragma once
+
 #define IDS_APP_TITLE			103
 
 // Next default values for new objects

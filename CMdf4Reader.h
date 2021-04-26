@@ -1,5 +1,7 @@
 // Machine generated IDispatch wrapper class(es) created with Add Class from Typelib Wizard
 
+#pragma once
+
 #import "C:\\Users\\Hendrik Streichhahn\\Documents\\uni\\HiWi\\mdf4reader\\MDF4Reader.dll" no_namespace
 // CMdf4Reader wrapper class
 
