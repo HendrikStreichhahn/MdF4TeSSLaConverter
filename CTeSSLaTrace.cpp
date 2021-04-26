@@ -25,11 +25,34 @@ BOOL CTeSSLaTrace::exportTrace(std::string filePath)
 	{
 		return false;
 	}
+
+	//vector of current indices in the streams
+	std::vector<int> currentIndices;
 	for (int i = 0; i < mvStreams.size(); i++)
-		for (int j = 0; j < mvStreams[i]->getEntries().size(); j++)
+		currentIndices.push_back(0);
+
+	//output events as long as they are not all included
+	while (notAllNegative(currentIndices))
+	{
+		//get earliest stream entry index
+		int currentlyEarliestIndex = -1;
+		int currentlyEarliestTimeStamp = INT_MAX;
+		for (unsigned int i = 0; i < currentIndices.size(); i++)
 		{
-			outputStrm << mvStreams[i]->getEntries()[j]->toString() << std::endl;
+			if (mvStreams.at(i)->getEntries().at(currentIndices[i])->getTimeStamp() < currentlyEarliestTimeStamp)
+			{
+				currentlyEarliestTimeStamp = mvStreams.at(i)->getEntries().at(currentIndices[i])->getTimeStamp();
+				currentlyEarliestIndex = i;
+			}
 		}
+		//print event  to file
+		outputStrm << mvStreams.at(currentlyEarliestIndex)->getEntries().at(currentIndices[currentlyEarliestIndex])->toString() << std::endl;
+		//update index
+		currentIndices[currentlyEarliestIndex]++;
+		if (currentIndices[currentlyEarliestIndex] >= mvStreams.at(currentlyEarliestIndex)->getEntries().size())
+			currentIndices[currentlyEarliestIndex] = -1;
+	}
+
 	outputStrm.close();
 }
 

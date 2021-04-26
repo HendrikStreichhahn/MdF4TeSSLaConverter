@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CTeSSLaStream.h"
+#include <string>
 
 class CTeSSLaTrace
 {

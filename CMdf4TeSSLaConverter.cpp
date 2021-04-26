@@ -111,12 +111,12 @@ bool CMdf4TeSSLaConverter::readMdf4File(std::string strPathToFile, long lTimeFac
 			// Access the data:
 			for (int i = 0; i < countTimeData; i++)
 			{
-				printf("    %.3lf  %.3lf\n", pTimeData[i], pData[i]);
 				stream->addEntry(new CTeSSLaStreamEntryFloat(stream, (pTimeData[i]* lTimeFactor), pData[i]));
 			}
 			// free memory
 			free(pTimeData);
 			free(pData);
+			//add the stream to the trace
 			mTrace->addStream(stream);
 		}
 	}
