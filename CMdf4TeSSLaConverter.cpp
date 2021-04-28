@@ -14,17 +14,7 @@
 
 bool CMdf4TeSSLaConverter::readMdf4File(std::string strPathToFile, long lTimeFactor)
 {
-	//init afx/mfc module
-	HMODULE hModule = ::GetModuleHandle(NULL);
-	if (hModule == NULL)
-	{
-		return false;
-	}
-	if (!AfxWinInit(hModule, NULL, ::GetCommandLine(), 0))
-	{
-		perror("Could not init Module Handle!\n");
-		return false;
-	}
+	
 	// find and init DLL
 	TCHAR szDLLPath[_MAX_PATH];
 	if (!FindCOMLib(szDLLPath, TRUE))
@@ -112,7 +102,7 @@ bool CMdf4TeSSLaConverter::readMdf4File(std::string strPathToFile, long lTimeFac
 			// Access the data:
 			for (int i = 0; i < countTimeData; i++)
 			{
-				stream->addEntry(new CTeSSLaStreamEntryFloat(stream, (pTimeData[i]* lTimeFactor), pData[i]));
+				stream->addEntry(new CTeSSLaStreamEventFloat(stream, (pTimeData[i]* lTimeFactor), pData[i]));
 			}
 			// free memory
 			free(pTimeData);

@@ -5,11 +5,11 @@
 
 class CTeSSLaStream;
 
-class CTeSSLaStreamEntry
+class CTeSSLaStreamEvent
 {
 public:
-	CTeSSLaStreamEntry(CTeSSLaStream* owner, unsigned long timeStamp);
-	~CTeSSLaStreamEntry() {};
+	CTeSSLaStreamEvent(CTeSSLaStream* owner, unsigned long timeStamp);
+	~CTeSSLaStreamEvent() {};
 	unsigned long getTimeStamp();
 	virtual std::string toString();
 protected:
@@ -17,28 +17,28 @@ protected:
 	CTeSSLaStream* mOwner;
 };
 
-class CTeSSLaStreamEntryVoid : public CTeSSLaStreamEntry
+class CTeSSLaStreamEventVoid : public CTeSSLaStreamEvent
 {
 public:
-	CTeSSLaStreamEntryVoid(CTeSSLaStream* owner, unsigned long timeStamp) : CTeSSLaStreamEntry(owner, timeStamp) {};
+	CTeSSLaStreamEventVoid(CTeSSLaStream* owner, unsigned long timeStamp) : CTeSSLaStreamEvent(owner, timeStamp) {};
 	std::string toString();
 protected:
 };
 
-class CTeSSLaStreamEntryInt : public CTeSSLaStreamEntry
+class CTeSSLaStreamEventInt : public CTeSSLaStreamEvent
 {
 public:
-	CTeSSLaStreamEntryInt(CTeSSLaStream* owner, unsigned long timestamp, int value);
+	CTeSSLaStreamEventInt(CTeSSLaStream* owner, unsigned long timestamp, int value);
 	std::string toString();
 	int getValue();
 protected:
 	int mValue;
 };
 
-class CTeSSLaStreamEntryFloat : public CTeSSLaStreamEntry
+class CTeSSLaStreamEventFloat : public CTeSSLaStreamEvent
 {
 public:
-	CTeSSLaStreamEntryFloat(CTeSSLaStream* owner, unsigned long timestamp, double value);
+	CTeSSLaStreamEventFloat(CTeSSLaStream* owner, unsigned long timestamp, double value);
 	std::string toString();
 	double getValue();
 protected:
@@ -50,30 +50,30 @@ class CTeSSLaStream
 public:
 	CTeSSLaStream(std::string name);
 	std::string getName() { return mName; };
-	std::vector<CTeSSLaStreamEntry*> getEntries() { return mvEntries; };
+	std::vector<CTeSSLaStreamEvent*> getEntries() { return mvEntries; };
 protected:
 	std::string mName;
-	std::vector<CTeSSLaStreamEntry*> mvEntries;
-	void insertEntry(CTeSSLaStreamEntry* entry);
+	std::vector<CTeSSLaStreamEvent*> mvEntries;
+	void insertEntry(CTeSSLaStreamEvent* entry);
 };
 
 class CTeSSLaStreamVoid : public CTeSSLaStream
 {
 public:
 	CTeSSLaStreamVoid(std::string name) : CTeSSLaStream(name) {};
-	void addEntry(CTeSSLaStreamEntryVoid* entry);
+	void addEntry(CTeSSLaStreamEventVoid* entry);
 };
 
 class CTeSSLaStreamInt : public CTeSSLaStream
 {
 public:
 	CTeSSLaStreamInt(std::string name) : CTeSSLaStream(name) {};
-	void addEntry(CTeSSLaStreamEntryInt* entry);
+	void addEntry(CTeSSLaStreamEventInt* entry);
 };
 
 class CTeSSLaStreamFloat : public CTeSSLaStream
 {
 public:
 	CTeSSLaStreamFloat(std::string name) : CTeSSLaStream(name) {};
-	void addEntry(CTeSSLaStreamEntryFloat* entry);
+	void addEntry(CTeSSLaStreamEventFloat* entry);
 };

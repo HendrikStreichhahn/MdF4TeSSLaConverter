@@ -221,7 +221,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Caller.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="CMDF4ReaderLib.cpp" />
     <ClCompile Include="CMdf4TeSSLaConverter.cpp" />
     <ClCompile Include="CTeSSLaStream.cpp" />

@@ -1,4 +1,4 @@
-// Caller.cpp : Defines the entry point for the console application.
+// main.cpp : Defines the entry point for the console application.
 //
 #pragma once
 
@@ -23,12 +23,16 @@
 
 // The one and only application object
 
-CWinApp theApp;
+//CWinApp theApp;
 
+BOOL initHModule();
 BOOL converter(TCHAR* inpPath, TCHAR* outPath);
 
 int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 {
+	if (!initHModule())
+		return -1;
+
 	char* inpPath = NULL;
 	char* outPath = NULL;
 
@@ -59,6 +63,20 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 	return 0;
 }
 
+BOOL initHModule() {
+	//init afx/mfc module
+	HMODULE hModule = ::GetModuleHandle(NULL);
+	if (hModule == NULL)
+	{
+		return false;
+	}
+	if (!AfxWinInit(hModule, NULL, ::GetCommandLine(), 0))
+	{
+		perror("Could not init Module Handle!\n");
+		return false;
+	}
+	return true;
+}
 
 BOOL converter(TCHAR* inpPath, TCHAR* outPath) 
 {

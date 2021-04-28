@@ -10,7 +10,7 @@ CTeSSLaStream::CTeSSLaStream(std::string name)
 	this->mName = name;
 }
 
-void CTeSSLaStream::insertEntry(CTeSSLaStreamEntry* entry)
+void CTeSSLaStream::insertEntry(CTeSSLaStreamEvent* entry)
 {
 	if (this->mvEntries.size() != 0)
 		if (this->mvEntries.back()->getTimeStamp() >= entry->getTimeStamp())
@@ -18,70 +18,70 @@ void CTeSSLaStream::insertEntry(CTeSSLaStreamEntry* entry)
 	this->mvEntries.push_back(entry);
 }
 
-void CTeSSLaStreamVoid::addEntry(CTeSSLaStreamEntryVoid* entry)
+void CTeSSLaStreamVoid::addEntry(CTeSSLaStreamEventVoid* entry)
 { 
 	insertEntry(entry);
 };
 
-void CTeSSLaStreamInt::addEntry(CTeSSLaStreamEntryInt* entry)
+void CTeSSLaStreamInt::addEntry(CTeSSLaStreamEventInt* entry)
 {
 	insertEntry(entry);
 };
 
-void CTeSSLaStreamFloat::addEntry(CTeSSLaStreamEntryFloat* entry)
+void CTeSSLaStreamFloat::addEntry(CTeSSLaStreamEventFloat* entry)
 {
 	insertEntry(entry);
 };
 
 
-unsigned long CTeSSLaStreamEntry::getTimeStamp()
+unsigned long CTeSSLaStreamEvent::getTimeStamp()
 {
 	return mTimeStamp;
 };
 
-CTeSSLaStreamEntry::CTeSSLaStreamEntry(CTeSSLaStream* owner, unsigned long timeStamp)
+CTeSSLaStreamEvent::CTeSSLaStreamEvent(CTeSSLaStream* owner, unsigned long timeStamp)
 {
 	this->mTimeStamp = timeStamp;
 	this->mOwner = owner;
 }
 
-std::string CTeSSLaStreamEntry::toString()
+std::string CTeSSLaStreamEvent::toString()
 {
 	return std::string();
 }
 
-std::string CTeSSLaStreamEntryVoid::toString()
+std::string CTeSSLaStreamEventVoid::toString()
 {
 	return std::to_string(this->getTimeStamp()) + ": " + mOwner->getName() + " = ()";
 };
 
-std::string CTeSSLaStreamEntryInt::toString()
+std::string CTeSSLaStreamEventInt::toString()
 {
 	return std::to_string(this->getTimeStamp()) + ": " + mOwner->getName() + " = " + std::to_string(this->getValue());
 };
 
-CTeSSLaStreamEntryInt::CTeSSLaStreamEntryInt(CTeSSLaStream* owner, unsigned long timestamp, int value) : CTeSSLaStreamEntry(owner, timestamp)
+CTeSSLaStreamEventInt::CTeSSLaStreamEventInt(CTeSSLaStream* owner, unsigned long timestamp, int value) : CTeSSLaStreamEvent(owner, timestamp)
 { 
 	this->mValue = value; 
 };
 
-int CTeSSLaStreamEntryInt::getValue() 
+int CTeSSLaStreamEventInt::getValue() 
 { 
 	return mValue; 
 };
 
-CTeSSLaStreamEntryFloat::CTeSSLaStreamEntryFloat(CTeSSLaStream* owner, unsigned long timestamp, double value)
-	: CTeSSLaStreamEntry(owner, timestamp)
+CTeSSLaStreamEventFloat::CTeSSLaStreamEventFloat(CTeSSLaStream* owner, unsigned long timestamp, double value)
+	: CTeSSLaStreamEvent(owner, timestamp)
 {
 	this->mValue = value;
 };
 
-std::string CTeSSLaStreamEntryFloat::toString()
+std::string CTeSSLaStreamEventFloat::toString()
 {
 	return std::to_string(this->getTimeStamp()) + ": " + mOwner->getName() + " = " + std::to_string(this->getValue());
 };
 
-double CTeSSLaStreamEntryFloat::getValue() 
+double CTeSSLaStreamEventFloat::getValue() 
 { 
 	return mValue; 
 };
