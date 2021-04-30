@@ -19,7 +19,10 @@ mono_crash.*
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
-[Rr]elease/
+[Rr]elease/*
+[Rr]elease/Mdf4TeSS.2BC8FEEF.tlog/
+[Rr]elease/Mdf4TeSSLaConverter.exe.recipe
+![Rr]elease/Mdf4TeSSLaConverter.exe
 [Rr]eleases/
 x64/
 x86/
@@ -363,3 +366,7 @@ MigrationBackup/
 FodyWeavers.xsd
 
 *.dll
+/CallerExample/Release/Mdf4TeSSLaConverter.exe.recipe
+/CallerExample/Release/Caller.vcxproj.FileListAbsolute.txt
+/CallerExample/Release/Caller.res
+/CallerExample/Release/Mdf4TeSS.2BC8FEEF.tlog
