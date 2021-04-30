@@ -30,7 +30,11 @@ bool CMdf4TeSSLaConverter::readMdf4File(std::string strPathToFile, long lTimeFac
 	}
 	mdf4Reader.InitDll();
 	//load the file
-	mdf4Reader.OpenMDF4(_bstr_t(strPathToFile.c_str()));
+	if (!mdf4Reader.OpenMDF4(_bstr_t(strPathToFile.c_str())))
+	{
+		perror("Could not open MDF4 File!\n");
+		return false;
+	}
 
 
 	if (mTrace != NULL)
@@ -118,17 +122,6 @@ bool CMdf4TeSSLaConverter::readMdf4File(std::string strPathToFile, long lTimeFac
 
 bool CMdf4TeSSLaConverter::printMdf4FileInfo(std::string strPathToFile)
 {
-	HMODULE hModule = ::GetModuleHandle(NULL);
-	if (hModule == NULL)
-	{
-		return false;
-	}
-	if (!AfxWinInit(hModule, NULL, ::GetCommandLine(), 0))
-	{
-		perror("Could not init Module Handle!\n");
-		return false;
-	}
-
 	// Load the tool as ordinary DLL rather than a COM object.
 		// However, we use the COM registration to find the DLL:
 	TCHAR szDLLPath[_MAX_PATH];
@@ -156,9 +149,11 @@ bool CMdf4TeSSLaConverter::printMdf4FileInfo(std::string strPathToFile)
 	m4.InitDll();
 
 	// Get an MDF4 file
-	m4.OpenMDF4(_bstr_t(strPathToFile.c_str()));
+	BOOL test = m4.OpenMDF4(_bstr_t(strPathToFile.c_str()));
 	lVersion = m4.GetVersion();
 	bIsMDF4 = lVersion >= 400;
+
+	long invalidNume = m4.GetInvalidBytes();
 
 	// Get file time and other infos
 	CTime ti(m4.GetFileTime());

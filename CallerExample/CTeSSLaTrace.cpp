@@ -46,7 +46,10 @@ BOOL CTeSSLaTrace::exportTrace(std::string filePath)
 		int currentlyEarliestTimeStamp = INT_MAX;
 		for (unsigned int i = 0; i < currentIndices.size(); i++)
 		{
-			if (mvStreams.at(i)->getEntries().at(currentIndices[i])->getTimeStamp() < currentlyEarliestTimeStamp)
+			CTeSSLaStream* currStrm = mvStreams.at(i);
+			if (currentIndices[i] < 0 || currentIndices[i] >= currStrm->getEntries().size())
+				continue;
+			if (currStrm->getEntries().at(currentIndices[i])->getTimeStamp() < currentlyEarliestTimeStamp)
 			{
 				currentlyEarliestTimeStamp = mvStreams.at(i)->getEntries().at(currentIndices[i])->getTimeStamp();
 				currentlyEarliestIndex = i;

@@ -27,6 +27,7 @@
 
 BOOL initHModule();
 BOOL converter(TCHAR* inpPath, TCHAR* outPath);
+BOOL printFileInfo(TCHAR* inpPath);
 
 int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 {
@@ -56,9 +57,9 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 	if (inpPath == NULL || outPath == NULL)
 	{
 		std::cout << "Invalid Parameters! Usage: -i inputFile -o outputFile" << std::endl;
-		return 0;
+		return -1;
 	}
-
+	printFileInfo(inpPath);
 	converter(inpPath, outPath);
 	return 0;
 }
@@ -78,6 +79,12 @@ BOOL initHModule() {
 	return true;
 }
 
+BOOL printFileInfo(TCHAR* inpPath)
+{
+	CMdf4TeSSLaConverter* converter = new CMdf4TeSSLaConverter();
+	return converter->printMdf4FileInfo(inpPath);
+}
+
 BOOL converter(TCHAR* inpPath, TCHAR* outPath) 
 {
 	CMdf4TeSSLaConverter* converter = new CMdf4TeSSLaConverter();
@@ -91,6 +98,7 @@ BOOL converter(TCHAR* inpPath, TCHAR* outPath)
 	if (!converter->exportTeSSLaFile(outPath))
 	{
 		std::cout << "Cannot export to " << outPath << std::endl;
+		return false;
 	}
 	return true;
 }

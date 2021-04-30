@@ -4,6 +4,10 @@
 #include "CTeSSLaStream.h"
 
 #include <stdexcept>
+#include <sstream>
+#include <limits>
+
+typedef std::numeric_limits< double > dbl;
 
 CTeSSLaStream::CTeSSLaStream(std::string name)
 {
@@ -78,7 +82,11 @@ CTeSSLaStreamEventFloat::CTeSSLaStreamEventFloat(CTeSSLaStream* owner, unsigned 
 
 std::string CTeSSLaStreamEventFloat::toString()
 {
-	return std::to_string(this->getTimeStamp()) + ": " + mOwner->getName() + " = " + std::to_string(this->getValue());
+	std::ostringstream ss;
+	//ss.precision(dbl::max_digits10);
+	ss << (this->getTimeStamp()) << ": " << mOwner->getName() << " = " << this->getValue();
+	return std::string(ss.str());
+	//return std::to_string(this->getTimeStamp()) + ": " + mOwner->getName() + " = " + std::to_string(this->getValue());
 };
 
 double CTeSSLaStreamEventFloat::getValue() 

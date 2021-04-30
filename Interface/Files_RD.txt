@@ -1,0 +1,6 @@
+Interface files:
+
+MDF4ReaderLib.h      C style interface
+
+CMDF4ReaderLib.cpp   C++ interface (a class definition)
+CMDF4ReaderLib.h
