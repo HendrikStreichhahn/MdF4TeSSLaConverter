@@ -32,10 +32,11 @@ bool CMdf4TeSSLaConverter::readMdf4File(std::string strPathToFile, long lTimeFac
 	//load the file
 	if (!mdf4Reader.OpenMDF4(_bstr_t(strPathToFile.c_str())))
 	{
-		perror("Could not open MDF4 File!\n");
+		perror("Could not open MDF4 File!");
 		return false;
 	}
 
+	long fileVersion = mdf4Reader.GetVersion();
 
 	if (mTrace != NULL)
 		free(mTrace);
@@ -44,6 +45,11 @@ bool CMdf4TeSSLaConverter::readMdf4File(std::string strPathToFile, long lTimeFac
 
 	// get number of groups
 	long nGroups = mdf4Reader.GetNGroups();
+	if (nGroups == 0)
+	{
+		perror("No data groups found!");
+		return false;
+	}
 	for (long iGrp = 0; iGrp < nGroups; iGrp++)
 	{
 		CString buff;
@@ -72,7 +78,8 @@ bool CMdf4TeSSLaConverter::readMdf4File(std::string strPathToFile, long lTimeFac
 		idx1 = mdf4Reader.TimeToIndex(xmin, 0);
 		idx2 = mdf4Reader.TimeToIndex(xmax, idx1);
 		// calc the number of values
-		long nValues = idx2 - idx1 + 1; // Calc number of data points 
+		long nValues = idx2 - idx1 + 1; // Calc number of data points
+		std::cout << "No. of Values: " << nValues << std::endl;
 		// go through signals
 		for (long iSig = 0; iSig < nSignals; iSig++)
 		{
@@ -93,14 +100,18 @@ bool CMdf4TeSSLaConverter::readMdf4File(std::string strPathToFile, long lTimeFac
 			CTeSSLaStreamFloat* stream;
 			stream = new CTeSSLaStreamFloat(std::string(signalName));
 
-			if (countTimeData != countData || pData == NULL || pTimeData == NULL)
+			if (countTimeData != countData)
 			{
-				perror("Error in MDF4-File! Different numbers of data and time signals in " + signalName + "\n");
+				std::cerr << "Error in MDF4-File! Different numbers of data and time signals in " << signalName << std::endl;
 				return false;
 			}
 			if (pData == NULL || pTimeData == NULL)
 			{
-				perror("Error while reading MDF4-File at signal" + signalName + "\n");
+				std::cerr << "Could not read data or timestamps" << std::endl;
+			}
+			if (pData == NULL || pTimeData == NULL)
+			{
+				std::cerr << "Error while reading MDF4-File at signal" << signalName << std::endl;
 				return false;
 			}
 			// Access the data:

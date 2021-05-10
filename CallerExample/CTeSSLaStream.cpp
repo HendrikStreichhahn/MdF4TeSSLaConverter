@@ -18,7 +18,16 @@ void CTeSSLaStream::insertEntry(CTeSSLaStreamEvent* entry)
 {
 	if (this->mvEntries.size() != 0)
 		if (this->mvEntries.back()->getTimeStamp() >= entry->getTimeStamp())
-			throw new std::logic_error("Inserted Events in wrong order!");
+		{
+			if (this->mvEntries.back()->getTimeStamp() == entry->getTimeStamp())
+				std::cout << "Two events with the same timestamp(" << entry->getTimeStamp() << ") in " << this->getName() << std::endl;
+			else
+			{
+				std::cout << "Error, Events not in order!" << std::endl;
+				throw new std::logic_error("Inserted Events not in order!");
+			}
+			
+		}
 	this->mvEntries.push_back(entry);
 }
 
