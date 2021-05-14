@@ -2,6 +2,8 @@
 
 #include "CTeSSLaTrace.h"
 
+#include "CMDF4ReaderLib.h"
+
 // Block types
 #define ID_HEADER       1
 #define ID_FILEHISTORY  2
@@ -53,5 +55,8 @@ protected:
 	CTeSSLaTrace* mTrace;
 private: 
 	BOOL FindCOMLib(TCHAR* pszPath, BOOL bReader = FALSE);
+	int readSignalFloat(CMDF4ReaderLib* mdf4Reader, CTeSSLaTrace* trace, long indexSignal, long nValues, long idx1, long idx2, long lTimeFactor);
+
+	int printDataHex(CMDF4ReaderLib* mdf4Reader, long indexSignal, long nValues, long idx1, long idx2, long lTimeFactor);
 };
 

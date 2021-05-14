@@ -4,7 +4,6 @@
 #include "CMdf4TeSSLaConverter.h"
 #include "CMdf4Reader.h"
 
-#include "CMDF4ReaderLib.h"
 #include <io.h>
 #include <atlsafe.h>
 //#include <vld.h>
@@ -83,52 +82,119 @@ bool CMdf4TeSSLaConverter::readMdf4File(std::string strPathToFile, long lTimeFac
 		// go through signals
 		for (long iSig = 0; iSig < nSignals; iSig++)
 		{
-			CString signalName;
-			signalName = mdf4Reader.LoadSignal(iSig);
-			LONG discrete;
-			wchar_t tDisplayName[256], tAliasName[256], tUnit[256], tComment[256];
-			*tDisplayName = *tAliasName = *tUnit = *tComment = 0;
-			mdf4Reader.GetSignal(tDisplayName, tAliasName, tUnit, tComment, &discrete);
-			double* pData = (double*)calloc(nValues, sizeof(double));
-			double* pTimeData = (double*)calloc(nValues, sizeof(double));
-			// Get the data from the time signal
-			LONG countTimeData = mdf4Reader.GetData(TRUE, idx1, idx2, pTimeData);
-			// Get the data form the signal
-			LONG countData = mdf4Reader.GetData(FALSE, idx1, idx2, pData);
+			long lDataType = 0;
+			long nFirstBit = 0;
+			long nBits = 0;
+			double Factor = 0.0;
+			double Offset = 0.0;
+			double RawMin = 0.0;
+			double RawMax = 0.0;
+			long bHasNoValues = 0;
+			long invalPos = 0;
+			mdf4Reader.GetSignalDetail(&lDataType, &nFirstBit, &nBits, &Factor, &Offset, &RawMin, &RawMax, &bHasNoValues, &invalPos);
 
-			//init new Stream
-			CTeSSLaStreamFloat* stream;
-			stream = new CTeSSLaStreamFloat(std::string(signalName));
+			std::cout << "lDataType: " << lDataType << std::endl;
+			std::cout << "nFirstBit: " << nFirstBit << std::endl;
+			std::cout << "nBits: " << nBits << std::endl;
+			std::cout << "Factor: " << Factor << std::endl;
+			std::cout << "Offset: " << Offset << std::endl;
+			std::cout << "RawMin: " << RawMin << std::endl;
+			std::cout << "RawMax: " << RawMax << std::endl;
+			std::cout << "bHasNoValues: " << bHasNoValues << std::endl;
+			std::cout << "invalPos: " << invalPos << std::endl;
 
-			if (countTimeData != countData)
-			{
-				std::cerr << "Error in MDF4-File! Different numbers of data and time signals in " << signalName << std::endl;
-				return false;
-			}
-			if (pData == NULL || pTimeData == NULL)
-			{
-				std::cerr << "Could not read data or timestamps" << std::endl;
-			}
-			if (pData == NULL || pTimeData == NULL)
-			{
-				std::cerr << "Error while reading MDF4-File at signal" << signalName << std::endl;
-				return false;
-			}
-			// Access the data:
-			for (int i = 0; i < countTimeData; i++)
-			{
-				stream->addEntry(new CTeSSLaStreamEventFloat(stream, (pTimeData[i]* lTimeFactor), pData[i]));
-			}
-			// free memory
-			free(pTimeData);
-			free(pData);
-			//add the stream to the trace
-			mTrace->addStream(stream);
+			
+			//readSignalFloat(&mdf4Reader, mTrace, iSig, nValues, idx1, idx2, lTimeFactor);
+			printDataHex(&mdf4Reader, iSig, nValues, idx1, idx2, lTimeFactor);
+
 		}
 	}
 	// Release the DLL object and free memory
 	mdf4Reader.ExitDll();
 	return true;
+}
+
+int CMdf4TeSSLaConverter::printDataHex(CMDF4ReaderLib* mdf4Reader, long indexSignal, long nValues, long idx1, long idx2, long lTimeFactor)
+{
+	CString signalName;
+	signalName = mdf4Reader->LoadSignal(indexSignal);
+	LONG discrete;
+	wchar_t tDisplayName[256], tAliasName[256], tUnit[256], tComment[256];
+	*tDisplayName = *tAliasName = *tUnit = *tComment = 0;
+	mdf4Reader->GetSignal(tDisplayName, tAliasName, tUnit, tComment, &discrete);
+
+	std::wstring wStr = std::wstring(tDisplayName);
+	std::cout << "DisplayName: " << std::string(wStr.begin(), wStr.end()) << std::endl;
+	wStr = std::wstring(tAliasName);
+	std::cout << "\ttAliasName: " << std::string(wStr.begin(), wStr.end()) << std::endl;
+	wStr = std::wstring(tUnit);
+	std::cout << "\ttUnit: " << std::string(wStr.begin(), wStr.end()) << std::endl;
+	wStr = std::wstring(tComment);
+	std::cout << "\ttComment: " << std::string(wStr.begin(), wStr.end()) << std::endl;
+	std::cout << "\tdiscrete: " << discrete << std::endl;
+
+	//read 8byte wise
+	long recordSize = mdf4Reader->GetRecordSize();
+	unsigned char* buff = (unsigned char*) malloc(1024);
+	//unsigned char* buff = (unsigned char*) malloc(recordSize+1);
+	if (buff == NULL)
+		return -1;
+	buff[1023] = 0;
+	//buff[recordSize] = 0;
+	for (long i = 0; i < nValues; i++) {
+		mdf4Reader->GetRecord(i, ((long) i) + 1, (BYTE*)buff);
+		for (int j = 0; j < recordSize; j++)
+			printf("%X ", buff[j]);
+		printf("\n");
+	}
+	free(buff);
+	return 0;
+}
+
+int CMdf4TeSSLaConverter::readSignalFloat(CMDF4ReaderLib* mdf4Reader, CTeSSLaTrace* trace, long indexSignal, long nValues, long idx1, long idx2, long lTimeFactor)
+{
+	CString signalName;
+	signalName = mdf4Reader->LoadSignal(indexSignal);
+	LONG discrete;
+	wchar_t tDisplayName[256], tAliasName[256], tUnit[256], tComment[256];
+	*tDisplayName = *tAliasName = *tUnit = *tComment = 0;
+	mdf4Reader->GetSignal(tDisplayName, tAliasName, tUnit, tComment, &discrete);
+	double* pData = (double*)calloc(nValues, sizeof(double));
+	double* pTimeData = (double*)calloc(nValues, sizeof(double));
+	// Get the data from the time signal
+	LONG countTimeData = mdf4Reader->GetData(TRUE, idx1, idx2, pTimeData);
+	// Get the data form the signal
+	LONG countData = mdf4Reader->GetData(FALSE, idx1, idx2, pData);
+
+	//init new Stream
+	CTeSSLaStreamFloat* stream;
+	stream = new CTeSSLaStreamFloat(std::string(signalName));
+
+	if (countTimeData != countData)
+	{
+		std::cerr << "Error in MDF4-File! Different numbers of data and time signals in " << signalName << std::endl;
+		return -1;
+	}
+	if (pData == NULL || pTimeData == NULL)
+	{
+		std::cerr << "Could not read data or timestamps" << std::endl;
+	}
+	if (pData == NULL || pTimeData == NULL)
+	{
+		std::cerr << "Error while reading MDF4-File at signal" << signalName << std::endl;
+		return -1;
+	}
+	// Access the data:
+	for (int i = 0; i < countTimeData; i++)
+	{
+		stream->addEntry(new CTeSSLaStreamEventFloat(stream, (pTimeData[i] * lTimeFactor), pData[i]));
+	}
+	// free memory
+	free(pTimeData);
+	free(pData);
+	//add the stream to the trace
+	trace->addStream(stream);
+	return 0;
 }
 
 bool CMdf4TeSSLaConverter::printMdf4FileInfo(std::string strPathToFile)
@@ -159,10 +225,15 @@ bool CMdf4TeSSLaConverter::printMdf4FileInfo(std::string strPathToFile)
 	}
 	m4.InitDll();
 
+	std::cout << "Reading File: " << strPathToFile << std::endl;
+
 	// Get an MDF4 file
 	BOOL test = m4.OpenMDF4(_bstr_t(strPathToFile.c_str()));
+
 	lVersion = m4.GetVersion();
 	bIsMDF4 = lVersion >= 400;
+
+	std::cout << "MF version: " << lVersion << std::endl;
 
 	long invalidNume = m4.GetInvalidBytes();
 
@@ -208,14 +279,25 @@ bool CMdf4TeSSLaConverter::printMdf4FileInfo(std::string strPathToFile)
 			printf("Text block = %s\n", str);
 	}
 	nGroups = m4.GetNGroups();
-	printf("No. of groups = %ld\n", nGroups);
+	std::cout << "No. of valid data groups: " << nGroups << std::endl;
+	if (bIsMDF4) // MDF3 has no group name
+	{
+		for (int i = 0; i < nGroups; i++)
+		{
+			str = m4.GetGroupName(i);
+			std::cout << "\tGroup " << i << ": " << str << std::endl;
+		}
+	}
+	std::cout << "Invalid Bytes: " << m4.GetInvalidBytes() << std::endl;
+
+		
 	// walk through all groups
 	for (iGrp = 0; iGrp < nGroups; iGrp++)
 	{
 		if (bIsMDF4) // MDF3 has no group name
 		{
 			str = m4.GetGroupName(iGrp);
-			printf("Group %ld = %s\n", iGrp + 1, (char*)_bstr_t(str));
+			printf("Group %ld = %s\n", iGrp, (char*)_bstr_t(str));
 		}
 		// Load the current group
 		m4.LoadGroup(iGrp);

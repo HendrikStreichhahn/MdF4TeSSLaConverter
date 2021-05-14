@@ -37,6 +37,8 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 	char* inpPath = NULL;
 	char* outPath = NULL;
 
+	bool printMF4Info = false;
+
 	for (int i = 1; i < argc; ++i)
 	{
 		if (argv[i][0] == '-')
@@ -52,6 +54,9 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 						outPath = argv[i + 1];
 					i++;
 					break;
+				case 'd':
+					printMF4Info = true;
+					break;
 			}
 	}
 	if (inpPath == NULL || outPath == NULL)
@@ -59,8 +64,10 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 		std::cout << "Invalid Parameters! Usage: -i inputFile -o outputFile" << std::endl;
 		return -1;
 	}
-	printFileInfo(inpPath);
-	converter(inpPath, outPath);
+	if (printMF4Info)
+		printFileInfo(inpPath);
+	else
+		converter(inpPath, outPath);
 	return 0;
 }
 
@@ -88,7 +95,7 @@ BOOL printFileInfo(TCHAR* inpPath)
 BOOL converter(TCHAR* inpPath, TCHAR* outPath) 
 {
 	CMdf4TeSSLaConverter* converter = new CMdf4TeSSLaConverter();
-	if (converter->readMdf4File(inpPath))
+	if (converter->readMdf4File(inpPath, 1000))
 		std::cout << "read file Successfully!" << std::endl;
 	else
 	{

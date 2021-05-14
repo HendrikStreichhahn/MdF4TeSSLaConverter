@@ -1,4 +1,23 @@
 #pragma once
+
+// enumeration for member cn_data_type
+#define CN_D_UINT_LE   0  // Unsigned Integer LE Byte Order
+#define CN_D_UINT_BE   1  // Unsigned Integer BE Byte Order
+#define CN_D_SINT_LE   2  // Signed Integer LE Byte Order
+#define CN_D_SINT_BE   3  // Snsigned Integer BE Byte Order
+#define CN_D_FLOAT_LE  4  // Float (IEEE 754) LE Byte Order
+#define CN_D_FLOAT_BE  5  // Float (IEEE 754) BE Byte Order
+#define CN_D_STRING    6  // String (ISO-8859-1 Latin), NULL terminated)
+#define CN_D_UTF8      7  // String (UTF8-encoded), NULL terminated)
+#define CN_D_UTF16_LE  8  // String (UTF16-LE Byte order), NULL terminated)
+#define CN_D_UTF16_BE  9  // String (UTF16-BE Byte order), NULL terminated)
+#define CN_D_BYTES    10  // Byte array
+#define CN_D_SAMPLE   11  // MIME sample
+#define CN_D_STREAM   12  // MIME stream
+#define CN_D_CODATE   13  // CANOpen Date
+#define CN_D_COTIME   14  // CANOpen Time
+#define CN_D_COMPLEX  15  // complex number
+
 class CMDF4ReaderLib
 {
 public:

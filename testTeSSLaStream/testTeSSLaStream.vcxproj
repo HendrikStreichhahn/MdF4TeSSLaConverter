@@ -108,7 +108,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>C:\Users\Hendrik Streichhahn\source\repos\MF4TeSSLaConverter\CallerExample\Debug;$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>CTeSSLaStream.obj;CTeSSLaTrace.obj;stdafx.obj;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CTeSSLaStream.obj;CTeSSLaTrace.obj;CTeSSLaCANStream.obj;stdafx.obj;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -171,6 +171,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="testTeSSLaCANFrame.cpp" />
     <ClCompile Include="testTeSSLaTrace.cpp" />
     <ClCompile Include="testTeSSLaStream.cpp" />
   </ItemGroup>

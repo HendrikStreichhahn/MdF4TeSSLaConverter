@@ -52,6 +52,7 @@ public:
 	std::string getName() { return mName; };
 	std::vector<CTeSSLaStreamEvent*> getEntries() { return mvEntries; };
 protected:
+	CTeSSLaStream() {};
 	std::string mName;
 	std::vector<CTeSSLaStreamEvent*> mvEntries;
 	void insertEntry(CTeSSLaStreamEvent* entry);

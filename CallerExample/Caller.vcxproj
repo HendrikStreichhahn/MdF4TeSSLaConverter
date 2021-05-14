@@ -125,6 +125,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BrowseInformation>true</BrowseInformation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -216,11 +217,13 @@
     <ClInclude Include="CMdf4TeSSLaConverter.h" />
     <ClInclude Include="CTeSSLaStream.h" />
     <ClInclude Include="CTeSSLaTrace.h" />
+    <ClInclude Include="CTeSSLaCANStream.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CTeSSLaCANStream.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="CMDF4ReaderLib.cpp" />
     <ClCompile Include="CMdf4TeSSLaConverter.cpp" />

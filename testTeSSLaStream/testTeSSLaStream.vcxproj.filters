@@ -24,6 +24,9 @@
     <ClCompile Include="testTeSSLaTrace.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="testTeSSLaCANFrame.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
