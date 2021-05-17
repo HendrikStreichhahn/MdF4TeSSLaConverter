@@ -37,7 +37,7 @@ protected:
 class CTeSSLaStreamCANFrame : public CTeSSLaStream
 {
 public:
-	CTeSSLaStreamCANFrame(uint32_t CANIdent);
+	CTeSSLaStreamCANFrame(std::string signalName, uint32_t CANIdent);
 	uint32_t getCANIdent() { return mCANIdent; };
 	void addEntry(CTeSSLaStreamEventCANFrame* event);
 protected:
@@ -49,7 +49,7 @@ class CCAN_FRAMETeSSLaStreamSet
 public:
 	CCAN_FRAMETeSSLaStreamSet();
 	~CCAN_FRAMETeSSLaStreamSet();
-	void insertCANFrame(unsigned long timeStamp, CCANFrame* aFrame);
+	void insertCANFrame(std::string signalName, unsigned long timeStamp, CCANFrame* aFrame);
 	void addToTrace(CTeSSLaTrace* trace);
 protected:
 	std::map<uint32_t, CTeSSLaStreamCANFrame*> mmStreams;

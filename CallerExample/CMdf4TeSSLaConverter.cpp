@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "CMdf4TeSSLaConverter.h"
 #include "CMdf4Reader.h"
+#include "CTeSSLaCANStream.h"
 
 #include <io.h>
 #include <atlsafe.h>
@@ -11,7 +12,7 @@
 
 #include <afxwin.h>
 
-bool CMdf4TeSSLaConverter::readMdf4File(std::string strPathToFile, long lTimeFactor)
+bool CMdf4TeSSLaConverter::readMdf4File(std::string strPathToFile, SignalDataTypes dataTypes, long dataTypesCount, long lTimeFactor)
 {
 	
 	// find and init DLL
@@ -61,6 +62,13 @@ bool CMdf4TeSSLaConverter::readMdf4File(std::string strPathToFile, long lTimeFac
 		}
 		//get signal and sample count
 		long nSignals = mdf4Reader.GetNSignals();
+
+		if (nSignals != dataTypesCount)
+		{
+			std::cout << nSignals << " types for signals required!" << std::endl;
+			return false;
+		}
+
 		unsigned __int64 nSamples = mdf4Reader.GetNSamples();
 		//Time Range
 		mdf4Reader.LoadTimeSignal();
@@ -103,10 +111,17 @@ bool CMdf4TeSSLaConverter::readMdf4File(std::string strPathToFile, long lTimeFac
 			std::cout << "bHasNoValues: " << bHasNoValues << std::endl;
 			std::cout << "invalPos: " << invalPos << std::endl;
 
-			
-			readSignalFloat(&mdf4Reader, mTrace, iSig, nValues, idx1, idx2, lTimeFactor);
-			//printDataHex(&mdf4Reader, iSig, nValues, idx1, idx2, lTimeFactor);
-
+			switch (dataTypes)
+			{
+			case (SignalDataTypes::floatingPoint8):
+				readSignalFloat(&mdf4Reader, mTrace, iSig, nValues, idx1, idx2, lTimeFactor);
+				break;
+			case (SignalDataTypes::CAN_Frames):
+				readSignalCANFrames(&mdf4Reader, mTrace, iSig, nValues, idx1, idx2, lTimeFactor);
+				break;
+			default:
+				throw "Reading this datatype is not implemented yet.";
+			}
 		}
 	}
 	// Release the DLL object and free memory
@@ -133,7 +148,6 @@ int CMdf4TeSSLaConverter::printDataHex(CMDF4ReaderLib* mdf4Reader, long indexSig
 	std::cout << "\ttComment: " << std::string(wStr.begin(), wStr.end()) << std::endl;
 	std::cout << "\tdiscrete: " << discrete << std::endl;
 
-	//read 8byte wise
 	long recordSize = mdf4Reader->GetRecordSize();
 	unsigned char* buff = (unsigned char*) malloc(1024);
 	//unsigned char* buff = (unsigned char*) malloc(recordSize+1);
@@ -144,11 +158,71 @@ int CMdf4TeSSLaConverter::printDataHex(CMDF4ReaderLib* mdf4Reader, long indexSig
 	for (long i = 0; i < nValues; i++) {
 		mdf4Reader->GetRecord(i, ((long) i) + 1, (BYTE*)buff);
 		for (int j = 0; j < recordSize; j++)
-			printf("%X ", buff[j]);
-		printf("\n");
+			std::cout << ByteToHexString(buff[j]) << " ";
+		std::cout << std::endl;
 	}
 	free(buff);
 	return 0;
+}
+
+int CMdf4TeSSLaConverter::readSignalCANFrames(CMDF4ReaderLib* mdf4Reader, CTeSSLaTrace* trace, long indexSignal, long nValues, long idx1, long idx2, long lTimeFactor)
+{
+	CString signalName;
+	signalName = mdf4Reader->LoadSignal(indexSignal);
+	signalName = convertName(std::string(signalName)).c_str();
+	LONG discrete;
+	wchar_t tDisplayName[256], tAliasName[256], tUnit[256], tComment[256];
+	*tDisplayName = *tAliasName = *tUnit = *tComment = 0;
+	mdf4Reader->GetSignal(tDisplayName, tAliasName, tUnit, tComment, &discrete);
+	double* pData = (double*)calloc(nValues, sizeof(double));
+	double* pTimeData = (double*)calloc(nValues, sizeof(double));
+	// Get the data from the time signal
+	LONG countTimeData = mdf4Reader->GetData(TRUE, idx1, idx2, pTimeData);
+	// Get the data form the signal
+	LONG countData = mdf4Reader->GetData(FALSE, idx1, idx2, pData);
+
+	//some error checks
+	if (countTimeData != countData)
+	{
+		std::cerr << "Error in MDF4-File! Different numbers of data and time signals in " << signalName << std::endl;
+		return -1;
+	}
+	if (pData == NULL || pTimeData == NULL)
+	{
+		std::cerr << "Could not read data or timestamps" << std::endl;
+	}
+	if (pData == NULL || pTimeData == NULL)
+	{
+		std::cerr << "Error while reading MDF4-File at signal" << signalName << std::endl;
+		return -1;
+	}
+
+	//buffer for signal records
+	long recordSize = mdf4Reader->GetRecordSize();
+	unsigned char* buff = (unsigned char*)malloc(recordSize+1);
+	if (buff == NULL)
+		return -1;
+	buff[recordSize] = 0;
+
+	CCAN_FRAMETeSSLaStreamSet* streams = new CCAN_FRAMETeSSLaStreamSet();
+
+	for (long i = 0; i < nValues; i++)
+	{
+		//get record
+		mdf4Reader->GetRecord(i, i+1, (BYTE*)buff);
+
+		double timeStamp = ((double*)buff)[0];
+		unsigned char* CANBytes = buff + 8;
+
+		CCANFrame* canFrame = new CCANFrame(CANBytes, 19);
+
+		streams->insertCANFrame(std::string(signalName), (long)(timeStamp * lTimeFactor), canFrame);
+
+	}
+
+	streams->addToTrace(trace);
+
+	delete streams;
 }
 
 int CMdf4TeSSLaConverter::readSignalFloat(CMDF4ReaderLib* mdf4Reader, CTeSSLaTrace* trace, long indexSignal, long nValues, long idx1, long idx2, long lTimeFactor)

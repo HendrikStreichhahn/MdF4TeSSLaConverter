@@ -23,7 +23,7 @@ namespace TeSSLaCANFrameTest
 			unsigned char bytes[27] = {0xF2, 0x41, 0xCF, 0xCE, 0xC0, 0x76, 0x32, 0x41, 0x01, 0x01, 
 				0xDB, 0xFE, 0x18, 0x01, 0x08, 0x08, 0xA3, 0x54, 0xA3, 0x54, 0xA3, 0x54, 0xFF,
 				0xFF, 0x00, 0x00, 0x00 };
-			CCANFrame aCanFrame(bytes, 27);
+			CCANFrame aCanFrame(bytes+8, 19);
 			//check id
 			uint32_t expectedID = 0x18FEDB01;
 			Assert::AreEqual(expectedID, aCanFrame.getIdentifier());
@@ -48,7 +48,7 @@ namespace TeSSLaCANFrameTest
 			unsigned char bytes[27] = { 0x6A, 0x4D, 0xF3, 0xCE, 0xC0, 0x76, 0x32, 0x41, 0x01, 0x21, 
 				0x04, 0xF0, 0x0C , 0x01, 0x08, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 
 				0xFF, 0x00, 0x00, 0x00 };
-			CCANFrame aCanFrame(bytes, 27);
+			CCANFrame aCanFrame(bytes+8, 19);
 			//check id
 			uint32_t expectedID = 0x0CF00421;
 			Assert::AreEqual(expectedID, aCanFrame.getIdentifier());
@@ -73,7 +73,7 @@ namespace TeSSLaCANFrameTest
 			unsigned char bytes[27] = { 0xBF, 0x9F, 0x1A, 0xCF, 0xC0, 0x76, 0x32, 0x41, 0x01, 0x81, 
 				0x03, 0xFF, 0x0C, 0x01, 0x08, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 				0x07, 0x00, 0x00, 0x00 };
-			CCANFrame aCanFrame(bytes, 27);
+			CCANFrame aCanFrame(bytes+8, 19);
 			//check id
 			uint32_t expectedID = 0x0CFF0381;
 			Assert::AreEqual(expectedID, aCanFrame.getIdentifier());
@@ -113,7 +113,7 @@ namespace TeSSLaCANFrameTest
 			buff[25] = 8;
 			buff[26] = 8;
 
-			return new CTeSSLaStreamEventCANFrame(owner, (long)(timeStamp * 1000), new CCANFrame(buff, 27));
+			return new CTeSSLaStreamEventCANFrame(owner, (long)(timeStamp * 1000), new CCANFrame(buff+8, 19));
 		}
 
 		TEST_METHOD(TestCANFrameStream)
@@ -133,7 +133,7 @@ namespace TeSSLaCANFrameTest
 					expectedData[i][j] = rand() % 255;
 			//define stream
 			uint32_t ident = 0x18F0A430;// 30A4F018;
-			CTeSSLaStreamCANFrame* stream = new CTeSSLaStreamCANFrame(ident);
+			CTeSSLaStreamCANFrame* stream = new CTeSSLaStreamCANFrame("Test", ident);
 			//insert events
 			for (int i = 0; i < FRAME_NUMBER; i++)
 				stream->addEntry(makeCANFrameEvent(stream, expectedIdentifier, expectedTimeStamps[i], expectedData[i]));
@@ -144,16 +144,16 @@ namespace TeSSLaCANFrameTest
 			{
 
 				std::stringstream stringStream;
-				stringStream << (long)(expectedTimeStamps[i] * 1000) << ": CAN_";
+				stringStream << (long)(expectedTimeStamps[i] * 1000) << ": Test_CAN_";
 
 				uint32_t ident = expectedIdentifier[3] << 24 | expectedIdentifier[2] << 16 | expectedIdentifier[1] << 8 | expectedIdentifier[0];
 
 				stringStream << uint32_tToHexString(ident);
 
-				stringStream << " =";
+				stringStream << " = 0x";
 
 				for (int j = 0; j < DATA_LENGTH; j++)
-					stringStream << " " << ByteToHexString(expectedData[i][j]);
+					stringStream << ByteToHexString(expectedData[i][j]);
 
 				std::string expectedString = stringStream.str();
 
@@ -186,7 +186,7 @@ namespace TeSSLaCANFrameTest
 					expectedData[i][j] = rand() % 255;
 			//define stream
 			uint32_t ident = 0x08F00400;// 30A4F018;
-			CTeSSLaStreamCANFrame* stream = new CTeSSLaStreamCANFrame(ident);
+			CTeSSLaStreamCANFrame* stream = new CTeSSLaStreamCANFrame("Test", ident);
 			//insert events
 			for (int i = 0; i < FRAME_NUMBER; i++)
 				stream->addEntry(makeCANFrameEvent(stream, expectedIdentifier, expectedTimeStamps[i], expectedData[i]));
@@ -197,15 +197,15 @@ namespace TeSSLaCANFrameTest
 			{
 
 				std::stringstream stringStream;
-				stringStream << (long)(expectedTimeStamps[i] * 1000) << ": CAN_";
+				stringStream << (long)(expectedTimeStamps[i] * 1000) << ": Test_CAN_";
 
 				uint32_t ident = expectedIdentifier[3] << 24 | expectedIdentifier[2] << 16 | expectedIdentifier[1] << 8 | expectedIdentifier[0];
 
 				stringStream << uint32_tToHexString(ident);
-				stringStream << " =";
+				stringStream << " = 0x";
 
 				for (int j = 0; j < DATA_LENGTH; j++)
-					stringStream << " " << ByteToHexString(expectedData[i][j]);
+					stringStream << ByteToHexString(expectedData[i][j]);
 
 				std::string expectedString = stringStream.str();
 

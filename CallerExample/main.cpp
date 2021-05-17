@@ -21,12 +21,9 @@
 #endif
 
 
-// The one and only application object
-
-//CWinApp theApp;
 
 BOOL initHModule();
-BOOL converter(TCHAR* inpPath, TCHAR* outPath);
+BOOL converter(TCHAR* inpPath, TCHAR* outPath, std::vector<SignalDataTypes> types);
 BOOL printFileInfo(TCHAR* inpPath);
 
 int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
@@ -36,6 +33,8 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 
 	char* inpPath = NULL;
 	char* outPath = NULL;
+
+	std::vector<SignalDataTypes> types;
 
 	bool printMF4Info = false;
 
@@ -54,20 +53,40 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 						outPath = argv[i + 1];
 					i++;
 					break;
+				case 't':
+					if (argc > i + 1)
+					{
+						if (std::string("double").compare(argv[i + 1]) == 0)
+						{
+							types.push_back(SignalDataTypes::floatingPoint8);
+							i++;
+							break;
+						}
+						if (std::string("CAN").compare(argv[i + 1]) == 0)
+						{
+							types.push_back(SignalDataTypes::CAN_Frames);
+							i++;
+							break;
+						}
+						std::cout << "Unknown Datatype " << argv[i + 1] << std::endl;
+						return -1;
+					}
+					i++;
+					break;
 				case 'd':
 					printMF4Info = true;
 					break;
 			}
 	}
-	if (inpPath == NULL || outPath == NULL)
+	if (inpPath == NULL || outPath == NULL || types.size() == 0)
 	{
-		std::cout << "Invalid Parameters! Usage: -i inputFile -o outputFile" << std::endl;
+		std::cout << "Invalid Parameters! Usage: -i inputFile -o outputFile -t [signalType1][SignalType2]... [-d]" << std::endl;
 		return -1;
 	}
 	if (printMF4Info)
 		printFileInfo(inpPath);
 	else
-		converter(inpPath, outPath);
+		converter(inpPath, outPath, types);
 	return 0;
 }
 
@@ -92,10 +111,10 @@ BOOL printFileInfo(TCHAR* inpPath)
 	return converter->printMdf4FileInfo(inpPath);
 }
 
-BOOL converter(TCHAR* inpPath, TCHAR* outPath) 
+BOOL converter(TCHAR* inpPath, TCHAR* outPath, std::vector<SignalDataTypes> types)
 {
 	CMdf4TeSSLaConverter* converter = new CMdf4TeSSLaConverter();
-	if (converter->readMdf4File(inpPath, 1000))
+	if (converter->readMdf4File(inpPath, types[0], types.size(), 1000))
 		std::cout << "read file Successfully!" << std::endl;
 	else
 	{

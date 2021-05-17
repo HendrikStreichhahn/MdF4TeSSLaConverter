@@ -39,19 +39,20 @@ std::string uint32_tToHexString(uint32_t val)
 
 CCANFrame::CCANFrame(unsigned char* pFrame, unsigned int frameSize)
 {
-	switch (frameSize)
-	{
-	case (27):
-		memcpy_s(&this->mIdent, sizeof(this->mIdent), (pFrame + 9), 4);
-		memcpy_s(&this->mDataLength, sizeof(this->mDataLength), (pFrame + 15), 1);
-		mpDataBytes = (unsigned char*)malloc(this->mDataLength);
-		if (mpDataBytes == NULL)
-			throw new std::bad_alloc();
-		memcpy_s(this->mpDataBytes, mDataLength, pFrame + 16, mDataLength);
-		break;
-	default:
-		throw "Unsupported CANFrame Size! Only CAN 2.0B Message Frames (not extended) supported yet!";
-	}
+	if (frameSize < 7)
+		throw "CCANFrame::CCANFrame! Not enough Bytes!";
+	//identifier
+	memcpy_s(&this->mIdent, sizeof(this->mIdent), (pFrame + 1), 4);
+	//data length
+	memcpy_s(&this->mDataLength, sizeof(this->mDataLength), (pFrame + 7), 1);
+	if (frameSize < (7 + mDataLength))
+		throw "CCANFrame::CCANFrame! Not enough Bytes!";
+	//data
+	mpDataBytes = (unsigned char*)malloc(this->mDataLength);
+	if (mpDataBytes == NULL)
+		throw new std::bad_alloc();
+	memcpy_s(this->mpDataBytes, mDataLength, pFrame + 8, mDataLength);
+
 }
 
 CCANFrame::~CCANFrame()
@@ -81,12 +82,12 @@ std::string CTeSSLaStreamEventCANFrame::toString()
 
 	mpCanFrame->getDataBytesCopy(buff, dataLength);
 
-	std::string dataString = "";
+	std::string dataString = "0x";
 	for (int i = 0; i < dataLength; i++)
-		dataString += " " + ByteToHexString(buff[i]);
+		dataString += "" + ByteToHexString(buff[i]);
 
 
-	return std::to_string(this->getTimeStamp()) + ": " + mOwner->getName() + " =" + dataString;
+	return std::to_string(this->getTimeStamp()) + ": " + mOwner->getName() + " = " + dataString;
 }
 
 void CTeSSLaStreamCANFrame::addEntry(CTeSSLaStreamEventCANFrame* event)
@@ -94,9 +95,9 @@ void CTeSSLaStreamCANFrame::addEntry(CTeSSLaStreamEventCANFrame* event)
 	insertEntry(event);
 }
 
-CTeSSLaStreamCANFrame::CTeSSLaStreamCANFrame(uint32_t CANIdent)
+CTeSSLaStreamCANFrame::CTeSSLaStreamCANFrame(std::string signalName, uint32_t CANIdent)
 {
-	mName = "CAN_" + uint32_tToHexString(CANIdent);
+	mName = signalName + "_CAN_" + uint32_tToHexString(CANIdent);
 }
 
 CCAN_FRAMETeSSLaStreamSet::CCAN_FRAMETeSSLaStreamSet()
@@ -107,12 +108,13 @@ CCAN_FRAMETeSSLaStreamSet::CCAN_FRAMETeSSLaStreamSet()
 
 CCAN_FRAMETeSSLaStreamSet::~CCAN_FRAMETeSSLaStreamSet()
 {
-	for (auto it = mmStreams.begin(); it != mmStreams.end(); it++)
-		free(it->second);
+	//dont free sthe streams-> is done in trace
+	//for (auto it = mmStreams.begin(); it != mmStreams.end(); it++)
+	//	free(it->second);
 	mmStreams.clear();
 }
 
-void CCAN_FRAMETeSSLaStreamSet::insertCANFrame(unsigned long timeStamp, CCANFrame* aFrame)
+void CCAN_FRAMETeSSLaStreamSet::insertCANFrame(std::string signalName,  unsigned long timeStamp, CCANFrame* aFrame)
 {
 	//check, if stream with same identifier exists
 	auto stream = mmStreams.find(aFrame->getIdentifier());
@@ -123,7 +125,7 @@ void CCAN_FRAMETeSSLaStreamSet::insertCANFrame(unsigned long timeStamp, CCANFram
 	else
 	{
 		//create new stream
-		CTeSSLaStreamCANFrame* newStream = new CTeSSLaStreamCANFrame(aFrame->getIdentifier());
+		CTeSSLaStreamCANFrame* newStream = new CTeSSLaStreamCANFrame(signalName, aFrame->getIdentifier());
 		newStream->addEntry(new CTeSSLaStreamEventCANFrame(newStream, timeStamp, aFrame));
 		mmStreams.insert({ aFrame->getIdentifier(), newStream });
 	}
