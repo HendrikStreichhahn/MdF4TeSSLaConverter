@@ -104,8 +104,8 @@ bool CMdf4TeSSLaConverter::readMdf4File(std::string strPathToFile, long lTimeFac
 			std::cout << "invalPos: " << invalPos << std::endl;
 
 			
-			//readSignalFloat(&mdf4Reader, mTrace, iSig, nValues, idx1, idx2, lTimeFactor);
-			printDataHex(&mdf4Reader, iSig, nValues, idx1, idx2, lTimeFactor);
+			readSignalFloat(&mdf4Reader, mTrace, iSig, nValues, idx1, idx2, lTimeFactor);
+			//printDataHex(&mdf4Reader, iSig, nValues, idx1, idx2, lTimeFactor);
 
 		}
 	}
@@ -155,6 +155,7 @@ int CMdf4TeSSLaConverter::readSignalFloat(CMDF4ReaderLib* mdf4Reader, CTeSSLaTra
 {
 	CString signalName;
 	signalName = mdf4Reader->LoadSignal(indexSignal);
+	signalName = convertName(std::string(signalName)).c_str();
 	LONG discrete;
 	wchar_t tDisplayName[256], tAliasName[256], tUnit[256], tComment[256];
 	*tDisplayName = *tAliasName = *tUnit = *tComment = 0;
@@ -466,3 +467,18 @@ BOOL CMdf4TeSSLaConverter::FindCOMLib(TCHAR* pszPath, BOOL bReader)
 	return FALSE;
 }
 
+std::string CMdf4TeSSLaConverter::convertName(std::string exisitingName)
+{
+	const int forbiddenCharCount = 6;
+	char forbiddenChars[forbiddenCharCount] = { '.', '-', ':', '=', ' ', '\n' };
+	char replaceWith = '_';
+	for (int i = 0; i < forbiddenCharCount; i++)
+	{
+		while (exisitingName.find(forbiddenChars[i]) != std::string::npos)
+		{
+			std::cout << "Invalid char (" << forbiddenChars[i] << ") found in signal name. Replaced by '_'" << std::endl;
+			exisitingName.replace(exisitingName.find(forbiddenChars[i]), 1, &replaceWith, 1);
+		}
+	}
+	return exisitingName;
+}

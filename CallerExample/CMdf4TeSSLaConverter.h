@@ -53,6 +53,7 @@ public:
 	void testOutput();
 protected:
 	CTeSSLaTrace* mTrace;
+	std::string convertName(std::string exisitingName);
 private: 
 	BOOL FindCOMLib(TCHAR* pszPath, BOOL bReader = FALSE);
 	int readSignalFloat(CMDF4ReaderLib* mdf4Reader, CTeSSLaTrace* trace, long indexSignal, long nValues, long idx1, long idx2, long lTimeFactor);
