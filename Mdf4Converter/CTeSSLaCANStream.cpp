@@ -82,10 +82,15 @@ std::string CTeSSLaStreamEventCANFrame::toString()
 
 	mpCanFrame->getDataBytesCopy(buff, dataLength);
 
-	std::string dataString = "0x";
+	std::string dataString = "Map(";
 	for (int i = 0; i < dataLength; i++)
-		dataString += "" + ByteToHexString(buff[i]);
-
+	{
+		dataString += std::to_string(i) + "->" +std::to_string(buff[i]);
+		if (i != (dataLength - 1))
+			dataString += ",";
+	}
+		
+	dataString += ")";
 
 	return std::to_string(this->getTimeStamp()) + ": " + mOwner->getName() + " = " + dataString;
 }

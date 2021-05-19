@@ -29,6 +29,7 @@ class CTeSSLaStreamEventCANFrame : public CTeSSLaStreamEvent
 {
 public:
 	CTeSSLaStreamEventCANFrame(CTeSSLaStreamCANFrame* owner, unsigned long timeStamp, CCANFrame* canFrame);
+	~CTeSSLaStreamEventCANFrame() { free(mpCanFrame); };
 	std::string toString();
 protected:
 	CCANFrame* mpCanFrame;
