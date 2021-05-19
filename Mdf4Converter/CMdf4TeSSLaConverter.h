@@ -59,9 +59,6 @@ private:
 	BOOL FindCOMLib(TCHAR* pszPath, BOOL bReader = FALSE);
 	int readSignalAuto(CMDF4ReaderLib* mdf4Reader, CTeSSLaTrace* trace, long indexSignal, long nValues, long idx1, long idx2, long lTimeFactor);
 	int readSignalCANFrames(CMDF4ReaderLib* mdf4Reader, CTeSSLaTrace* trace, long indexSignal, long nValues, long idx1, long idx2, long lTimeFactor);
-	//int readSignalIntTypes(CMDF4ReaderLib* mdf4Reader, CTeSSLaTrace* trace, SignalDataTypes type, long indexSignal, long nValues, long idx1, long idx2, long lTimeFactor);
-	//int readSignalFloatTypes(CMDF4ReaderLib* mdf4Reader, CTeSSLaTrace* trace, SignalDataTypes type, long indexSignal, long nValues, long idx1, long idx2, long lTimeFactor);
-
 	int printDataHex(CMDF4ReaderLib* mdf4Reader, long indexSignal, long nValues, long idx1, long idx2, long lTimeFactor);
 };
 

@@ -1,0 +1,2 @@
+C:\Users\Hendrik Streichhahn\source\repos\MF4TeSSLaConverter\CallerExample\Release\Mdf4TeSSLaConverter.exe
+C:\Users\Hendrik Streichhahn\source\repos\MF4TeSSLaConverter\Mdf4Converter\Release\Mdf4TeSSLaConverter.exe
