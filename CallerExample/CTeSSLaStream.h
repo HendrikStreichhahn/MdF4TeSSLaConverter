@@ -28,11 +28,11 @@ protected:
 class CTeSSLaStreamEventInt : public CTeSSLaStreamEvent
 {
 public:
-	CTeSSLaStreamEventInt(CTeSSLaStream* owner, unsigned long timestamp, int value);
+	CTeSSLaStreamEventInt(CTeSSLaStream* owner, unsigned long timestamp, long value);
 	std::string toString();
-	int getValue();
+	long getValue();
 protected:
-	int mValue;
+	long mValue;
 };
 
 class CTeSSLaStreamEventFloat : public CTeSSLaStreamEvent

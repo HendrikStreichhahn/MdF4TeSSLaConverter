@@ -40,28 +40,13 @@
 #define si_tx_path    1
 #define si_md_comment 2
 
-enum class SignalDataTypes 
-{
-	uint8, 
-	uint16,
-	uint32,
-	uint64,
-	int8,
-	int16,
-	int32,
-	int64,
-	floatingPoint4, //float
-	floatingPoint8, //double
-	CAN_Frames
-};
-
-
 class CMdf4TeSSLaConverter
 {
 public:
 	//reads and MDF4 File
 	//	lTimeFactor-> mutliplying factor to convert float time to ints. Factor 1,000-> 1 <=> 1ms
-	bool readMdf4File(std::string strPathToFile, SignalDataTypes dataTypes, long dataTypesCount, long lTimeFactor = 1000);
+	bool readMdf4File(std::string strPathToFile, long lTimeFactor = 1000);
+	bool readMdf4FileCAN(std::string strPathToFile, long lTimeFactor = 1000);
 	bool CMdf4TeSSLaConverter::printMdf4FileInfo(std::string strPathToFile);
 
 	bool exportTeSSLaFile(std::string strPathToFile);
@@ -72,8 +57,10 @@ protected:
 	std::string convertName(std::string exisitingName);
 private: 
 	BOOL FindCOMLib(TCHAR* pszPath, BOOL bReader = FALSE);
-	int readSignalFloat(CMDF4ReaderLib* mdf4Reader, CTeSSLaTrace* trace, long indexSignal, long nValues, long idx1, long idx2, long lTimeFactor);
+	int readSignalAuto(CMDF4ReaderLib* mdf4Reader, CTeSSLaTrace* trace, long indexSignal, long nValues, long idx1, long idx2, long lTimeFactor);
 	int readSignalCANFrames(CMDF4ReaderLib* mdf4Reader, CTeSSLaTrace* trace, long indexSignal, long nValues, long idx1, long idx2, long lTimeFactor);
+	//int readSignalIntTypes(CMDF4ReaderLib* mdf4Reader, CTeSSLaTrace* trace, SignalDataTypes type, long indexSignal, long nValues, long idx1, long idx2, long lTimeFactor);
+	//int readSignalFloatTypes(CMDF4ReaderLib* mdf4Reader, CTeSSLaTrace* trace, SignalDataTypes type, long indexSignal, long nValues, long idx1, long idx2, long lTimeFactor);
 
 	int printDataHex(CMDF4ReaderLib* mdf4Reader, long indexSignal, long nValues, long idx1, long idx2, long lTimeFactor);
 };

@@ -102,16 +102,13 @@ CTeSSLaStreamCANFrame::CTeSSLaStreamCANFrame(std::string signalName, uint32_t CA
 
 CCAN_FRAMETeSSLaStreamSet::CCAN_FRAMETeSSLaStreamSet()
 {
-//	mmStreams = new std::map<CTeSSLaStreamCANFrame*, uint32_t>();
+
 }
 
 
 CCAN_FRAMETeSSLaStreamSet::~CCAN_FRAMETeSSLaStreamSet()
 {
-	//dont free the streams here -> is done in trace
-	//for (auto it = mmStreams.begin(); it != mmStreams.end(); it++)
-	//	free(it->second);
-	//mmStreams.clear();
+	mmStreams.clear();
 }
 
 void CCAN_FRAMETeSSLaStreamSet::insertCANFrame(std::string signalName,  unsigned long timeStamp, CCANFrame* aFrame)
