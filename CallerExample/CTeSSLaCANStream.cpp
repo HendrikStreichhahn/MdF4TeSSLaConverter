@@ -108,10 +108,10 @@ CCAN_FRAMETeSSLaStreamSet::CCAN_FRAMETeSSLaStreamSet()
 
 CCAN_FRAMETeSSLaStreamSet::~CCAN_FRAMETeSSLaStreamSet()
 {
-	//dont free sthe streams-> is done in trace
+	//dont free the streams here -> is done in trace
 	//for (auto it = mmStreams.begin(); it != mmStreams.end(); it++)
 	//	free(it->second);
-	mmStreams.clear();
+	//mmStreams.clear();
 }
 
 void CCAN_FRAMETeSSLaStreamSet::insertCANFrame(std::string signalName,  unsigned long timeStamp, CCANFrame* aFrame)
