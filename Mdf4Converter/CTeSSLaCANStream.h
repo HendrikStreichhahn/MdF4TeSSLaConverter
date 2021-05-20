@@ -29,7 +29,7 @@ class CTeSSLaStreamEventCANFrame : public CTeSSLaStreamEvent
 {
 public:
 	CTeSSLaStreamEventCANFrame(CTeSSLaStreamCANFrame* owner, unsigned long timeStamp, CCANFrame* canFrame);
-	~CTeSSLaStreamEventCANFrame() { free(mpCanFrame); };
+	~CTeSSLaStreamEventCANFrame() { delete mpCanFrame; };
 	std::string toString();
 protected:
 	CCANFrame* mpCanFrame;
@@ -39,6 +39,7 @@ class CTeSSLaStreamCANFrame : public CTeSSLaStream
 {
 public:
 	CTeSSLaStreamCANFrame(std::string signalName, uint32_t CANIdent);
+	~CTeSSLaStreamCANFrame();
 	uint32_t getCANIdent() { return mCANIdent; };
 	void addEntry(CTeSSLaStreamEventCANFrame* event);
 protected:

@@ -4,12 +4,20 @@
 #include "CTeSSLaTrace.h"
 
 #include <fstream>
-//#include <iostream>
-//#include <cstdlib>
 
 CTeSSLaTrace::CTeSSLaTrace()
 {
 
+}
+
+CTeSSLaTrace::~CTeSSLaTrace()
+{
+	for (CTeSSLaStream* stream : mvStreams)
+	{
+		delete stream;
+	}
+		
+	mvStreams.resize(0);
 }
 
 void CTeSSLaTrace::addStream(CTeSSLaStream* stream) 

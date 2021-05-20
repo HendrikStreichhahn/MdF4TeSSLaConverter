@@ -12,6 +12,12 @@
 
 #include <afxwin.h>
 
+CMdf4TeSSLaConverter::~CMdf4TeSSLaConverter()
+{
+	if (mTrace != NULL)
+		delete mTrace;
+}
+
 bool CMdf4TeSSLaConverter::readMdf4File(std::string strPathToFile, long lTimeFactor)
 {
 	
@@ -39,7 +45,7 @@ bool CMdf4TeSSLaConverter::readMdf4File(std::string strPathToFile, long lTimeFac
 	long fileVersion = mdf4Reader->GetVersion();
 
 	if (mTrace != NULL)
-		free(mTrace);
+		delete mTrace;
 	//init tessla trace
 	mTrace = new CTeSSLaTrace();
 
@@ -143,7 +149,7 @@ bool CMdf4TeSSLaConverter::readMdf4FileCAN(std::string strPathToFile, long lTime
 	long fileVersion = mdf4Reader->GetVersion();
 
 	if (mTrace != NULL)
-		free(mTrace);
+		delete mTrace;
 	//init tessla trace
 	mTrace = new CTeSSLaTrace();
 
@@ -246,7 +252,7 @@ int CMdf4TeSSLaConverter::printDataHex(CMDF4ReaderLib* mdf4Reader, long indexSig
 	//unsigned char* buff = (unsigned char*) malloc(recordSize+1);
 	if (buff == NULL)
 		return -1;
-	buff[1023] = 0;
+	buff[1024] = 0;
 	//buff[recordSize] = 0;
 	for (long i = 0; i < nValues; i++) {
 		mdf4Reader->GetRecord(i, ((long) i) + 1, (BYTE*)buff);
@@ -629,6 +635,8 @@ BOOL CMdf4TeSSLaConverter::FindCOMLib(TCHAR* pszPath, BOOL bReader)
 		if (res == ERROR_SUCCESS)
 			return TRUE;
 	}
+	free(WriterDLLKEY);
+	free(ReaderDLLKEY);
 	return FALSE;
 }
 

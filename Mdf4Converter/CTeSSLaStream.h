@@ -9,7 +9,7 @@ class CTeSSLaStreamEvent
 {
 public:
 	CTeSSLaStreamEvent(CTeSSLaStream* owner, unsigned long timeStamp);
-	~CTeSSLaStreamEvent() {};
+	virtual ~CTeSSLaStreamEvent() {};
 	unsigned long getTimeStamp();
 	virtual std::string toString();
 protected:
@@ -49,6 +49,7 @@ class CTeSSLaStream
 {
 public:
 	CTeSSLaStream(std::string name);
+	virtual ~CTeSSLaStream();
 	std::string getName() { return mName; };
 	std::vector<CTeSSLaStreamEvent*> getEntries() { return mvEntries; };
 protected:

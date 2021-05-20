@@ -73,6 +73,7 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 			converterCAN(inpPath, outPath);
 		else
 			converter(inpPath, outPath);
+	std::cout << "done" << std::endl;
 	return 0;
 }
 
@@ -94,7 +95,9 @@ BOOL initHModule() {
 BOOL printFileInfo(TCHAR* inpPath)
 {
 	CMdf4TeSSLaConverter* converter = new CMdf4TeSSLaConverter();
-	return converter->printMdf4FileInfo(inpPath);
+	bool result =  converter->printMdf4FileInfo(inpPath);
+	delete converter;
+	return result;
 }
 
 BOOL converter(TCHAR* inpPath, TCHAR* outPath)
@@ -105,13 +108,16 @@ BOOL converter(TCHAR* inpPath, TCHAR* outPath)
 	else
 	{
 		std::cout << "converter->readMdf4File returned false!" << std::endl;
+		delete converter;
 		return false;
 	}
 	if (!converter->exportTeSSLaFile(outPath))
 	{
 		std::cout << "Cannot export to " << outPath << std::endl;
+		delete converter;
 		return false;
 	}
+	delete converter;
 	return true;
 }
 
@@ -123,12 +129,15 @@ BOOL converterCAN(TCHAR* inpPath, TCHAR* outPath)
 	else
 	{
 		std::cout << "converter->readMdf4File returned false!" << std::endl;
+		delete converter;
 		return false;
 	}
 	if (!converter->exportTeSSLaFile(outPath))
 	{
 		std::cout << "Cannot export to " << outPath << std::endl;
+		delete converter;
 		return false;
 	}
+	delete converter;
 	return true;
 }

@@ -7,6 +7,7 @@ class CTeSSLaTrace
 {
 public:
 	CTeSSLaTrace();
+	~CTeSSLaTrace();
 	void addStream(CTeSSLaStream* stream);
 	void printTrace();
 	BOOL exportTrace(std::string filePath);

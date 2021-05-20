@@ -92,6 +92,8 @@ std::string CTeSSLaStreamEventCANFrame::toString()
 		
 	dataString += ")";
 
+	free(buff);
+
 	return std::to_string(this->getTimeStamp()) + ": " + mOwner->getName() + " = " + dataString;
 }
 
@@ -103,6 +105,16 @@ void CTeSSLaStreamCANFrame::addEntry(CTeSSLaStreamEventCANFrame* event)
 CTeSSLaStreamCANFrame::CTeSSLaStreamCANFrame(std::string signalName, uint32_t CANIdent)
 {
 	mName = signalName + "_CAN_" + uint32_tToHexString(CANIdent);
+}
+
+CTeSSLaStreamCANFrame::~CTeSSLaStreamCANFrame()
+{
+	for (CTeSSLaStreamEvent* event : mvEntries)
+	{
+		delete (CTeSSLaStreamEventCANFrame*)event;
+	}
+		
+	mvEntries.resize(0);
 }
 
 CCAN_FRAMETeSSLaStreamSet::CCAN_FRAMETeSSLaStreamSet()

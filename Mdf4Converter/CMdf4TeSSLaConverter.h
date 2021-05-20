@@ -43,6 +43,7 @@
 class CMdf4TeSSLaConverter
 {
 public:
+	~CMdf4TeSSLaConverter();
 	//reads and MDF4 File
 	//	lTimeFactor-> mutliplying factor to convert float time to ints. Factor 1,000-> 1 <=> 1ms
 	bool readMdf4File(std::string strPathToFile, long lTimeFactor = 1000);

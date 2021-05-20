@@ -14,6 +14,12 @@ CTeSSLaStream::CTeSSLaStream(std::string name)
 	this->mName = name;
 }
 
+CTeSSLaStream::~CTeSSLaStream()
+{
+	for (CTeSSLaStreamEvent* event : mvEntries)
+		delete event;
+}
+
 void CTeSSLaStream::insertEntry(CTeSSLaStreamEvent* entry)
 {
 	if (this->mvEntries.size() != 0)
@@ -91,14 +97,6 @@ CTeSSLaStreamEventFloat::CTeSSLaStreamEventFloat(CTeSSLaStream* owner, unsigned 
 
 std::string CTeSSLaStreamEventFloat::toString()
 {
-	/*std::ostringstream ss;
-	//ss.precision(dbl::max_digits10);
-	std::string name = mOwner->getName();
-	ss << (this->getTimeStamp()) << ": " << mOwner->getName() << " = " << this->getValue();
-	return std::string(ss.str());*/
-
-	//return std::to_string(mValue);
-
 	return std::to_string(this->getTimeStamp()) + ": " + mOwner->getName() + " = " + std::to_string(this->getValue());
 };
 
