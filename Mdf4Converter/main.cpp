@@ -23,8 +23,8 @@
 
 
 BOOL initHModule();
-BOOL converter(TCHAR* inpPath, TCHAR* outPath);
-BOOL converterCAN(TCHAR* inpPath, TCHAR* outPath);
+BOOL converter(TCHAR* inpPath, TCHAR* outPath, long lTimeFactor);
+BOOL converterCAN(TCHAR* inpPath, TCHAR* outPath, long lTimeFactor);
 BOOL printFileInfo(TCHAR* inpPath);
 
 int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
@@ -37,6 +37,8 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 
 	bool printMF4Info = false;
 	bool readAsCAN = false;
+
+	long lTimeFactor = -1;
 
 	for (int i = 1; i < argc; ++i)
 	{
@@ -59,6 +61,11 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 				case 'd':
 					printMF4Info = true;
 					break;
+				case 'f':
+					if (argc > i + 1)
+						lTimeFactor = std::stoi(argv[i + 1]);
+						i++;
+					break;
 			}
 	}
 	if (inpPath == NULL || outPath == NULL)
@@ -66,13 +73,18 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 		std::cout << "Invalid Parameters! Usage: -i inputFile -o outputFile [-C] [-d]" << std::endl;
 		return -1;
 	}
+
+	if (lTimeFactor <= 0)
+		std::cout << "Time Factor not specified (parameter -f). Set to 1000 (milliseconds)" << std::endl;
+
 	if (printMF4Info)
 		printFileInfo(inpPath);
 	else
 		if (readAsCAN)
-			converterCAN(inpPath, outPath);
+			converterCAN(inpPath, outPath, lTimeFactor);
 		else
-			converter(inpPath, outPath);
+			converter(inpPath, outPath, lTimeFactor);
+
 	std::cout << "done" << std::endl;
 	return 0;
 }
@@ -100,10 +112,10 @@ BOOL printFileInfo(TCHAR* inpPath)
 	return result;
 }
 
-BOOL converter(TCHAR* inpPath, TCHAR* outPath)
+BOOL converter(TCHAR* inpPath, TCHAR* outPath, long lTimeFactor)
 {
 	CMdf4TeSSLaConverter* converter = new CMdf4TeSSLaConverter();
-	if (converter->readMdf4File(inpPath, 1000))
+	if (converter->readMdf4File(inpPath, lTimeFactor))
 		std::cout << "read file Successfully!" << std::endl;
 	else
 	{
@@ -121,10 +133,10 @@ BOOL converter(TCHAR* inpPath, TCHAR* outPath)
 	return true;
 }
 
-BOOL converterCAN(TCHAR* inpPath, TCHAR* outPath)
+BOOL converterCAN(TCHAR* inpPath, TCHAR* outPath, long lTimeFactor)
 {
 	CMdf4TeSSLaConverter* converter = new CMdf4TeSSLaConverter();
-	if (converter->readMdf4FileCAN(inpPath, 1000))
+	if (converter->readMdf4FileCAN(inpPath, lTimeFactor))
 		std::cout << "read file Successfully!" << std::endl;
 	else
 	{
