@@ -76,9 +76,10 @@ namespace TeSSLaStreamTest
 				_itoa_s(i, buffer, 10);
 				buffer[32] = 0;
 				//make expected string
-				std::ostringstream ss;
-				ss << i << ": " << aStream->getName() << " = " << 3.1415927*i;
-				expectedStrings.push_back(std::string(ss.str()));
+				//std::ostringstream ss;
+				//ss << i << ": " << aStream->getName() << " = " << 3.1415927*i;
+				//expectedStrings.push_back(std::string(ss.str()));
+				expectedStrings.push_back(std::to_string(i) + ": " + aStream->getName() + " = " + std::to_string(3.1415927 * i));
 				aStream->addEntry(new CTeSSLaStreamEventFloat(aStream, i, 3.1415927*i));
 			}
 			//check toString method

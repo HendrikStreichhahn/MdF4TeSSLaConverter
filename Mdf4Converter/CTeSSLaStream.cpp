@@ -97,7 +97,10 @@ CTeSSLaStreamEventFloat::CTeSSLaStreamEventFloat(CTeSSLaStream* owner, unsigned 
 
 std::string CTeSSLaStreamEventFloat::toString()
 {
-	return std::to_string(this->getTimeStamp()) + ": " + mOwner->getName() + " = " + std::to_string(this->getValue());
+	if (this->getValue() >= 0)
+		return std::to_string(this->getTimeStamp()) + ": " + mOwner->getName() + " = " + std::to_string(this->getValue());
+	else
+		return std::to_string(this->getTimeStamp()) + ": " + mOwner->getName() + " = -." + std::to_string(this->getValue() * (-1.0));
 };
 
 double CTeSSLaStreamEventFloat::getValue() 

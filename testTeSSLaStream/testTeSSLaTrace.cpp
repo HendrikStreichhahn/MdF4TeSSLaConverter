@@ -6,7 +6,7 @@
 #include <fstream>
 #include <list>
 
-#include "../CallerExample/CTeSSLaTrace.h"
+#include "../Mdf4Converter/CTeSSLaTrace.h"
 
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -37,9 +37,9 @@ namespace TeSSLaTraceTest
 				char buffer[11];
 				_itoa_s(i * TIME_DIST_A, buffer, 10);
 				buffer[10] = 0;
-				expectedLines.push_back(std::string(buffer) + ": " + streamA->getName() + " = 3.77845");
+				expectedLines.push_back(std::string(buffer) + ": " + streamA->getName() + " = " + std::to_string(3.77845));
 				_itoa_s(i * TIME_DIST_A + TIME_DIST_B, buffer, 10);
-				expectedLines.push_back(std::string(buffer) + ": " + streamB->getName() + " = 5.84561");
+				expectedLines.push_back(std::string(buffer) + ": " + streamB->getName() + " = " + std::to_string(5.845610));
 			}
 
 			// create trace, insert streams and export
@@ -113,19 +113,19 @@ namespace TeSSLaTraceTest
 			for (unsigned int i = 0; i < ENTRY_COUNT; i++)
 			{
 				_itoa_s(i* TIME_DIST_A, buffer, 10);
-				expectedLines.push_back(std::string(buffer) + ": " + streamA->getName() + " = 3.77845");
+				expectedLines.push_back(std::string(buffer) + ": " + streamA->getName() + " = " + std::to_string(3.77845));
 				insertedLinesA++;
 			}
 			for (unsigned int i = 0; i < ENTRY_COUNT; i++)
 			{
 				_itoa_s(i* TIME_DIST_B, buffer, 10);
-				expectedLines.push_back(std::string(buffer) + ": " + streamB->getName() + " = 5.84561");
+				expectedLines.push_back(std::string(buffer) + ": " + streamB->getName() + " = " + std::to_string(5.84561));
 				insertedLinesB++;
 			}
 			for (unsigned int i = 0; i < ENTRY_COUNT; i++)
 			{
 				_itoa_s(i* TIME_DIST_C, buffer, 10);
-				expectedLines.push_back(std::string(buffer) + ": " + streamC->getName() + " = 2.71828");
+				expectedLines.push_back(std::string(buffer) + ": " + streamC->getName() + " = " + std::to_string(2.71828));
 				insertedLinesC++;
 			}
 
@@ -200,19 +200,19 @@ namespace TeSSLaTraceTest
 			for (unsigned int i = 1; i < ENTRY_COUNT; i++)
 			{
 				_itoa_s(i * TIME_DIST_B, buffer, 10);
-				expectedLines.push_back(std::string(buffer) + ": " + streamB->getName() + " = 5.84561");
+				expectedLines.push_back(std::string(buffer) + ": " + streamB->getName() + " = " + std::to_string(5.84561));
 				insertedLinesB++;
 			}
 			for (unsigned int i = 1; i < ENTRY_COUNT; i++)
 			{
 				_itoa_s(i * TIME_DIST_C, buffer, 10);
-				expectedLines.push_back(std::string(buffer) + ": " + streamC->getName() + " = 2.71828");
+				expectedLines.push_back(std::string(buffer) + ": " + streamC->getName() + " = " + std::to_string(2.71828));
 				insertedLinesC++;
 			}
 			for (unsigned int i = 1; i < ENTRY_COUNT; i++)
 			{
 				_itoa_s(i * TIME_DIST_A, buffer, 10);
-				expectedLines.push_back(std::string(buffer) + ": " + streamA->getName() + " = 3.77845");
+				expectedLines.push_back(std::string(buffer) + ": " + streamA->getName() + " = " + std::to_string(3.77845));
 				insertedLinesA++;
 			}
 

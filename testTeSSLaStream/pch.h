@@ -8,5 +8,5 @@
 // Fügen Sie hier Header hinzu, die vorkompiliert werden sollen.
 
 
-#include "../CallerExample/CTeSSLaStream.h"
-#include "stdafx.h"
+#include "../Mdf4Converter/CTeSSLaStream.h"
+#include "../Mdf4Converter/stdafx.h"

@@ -7,7 +7,7 @@
 #include <list>
 #include <string.h>
 
-#include "../CallerExample/CTeSSLaCANStream.h"
+#include "../Mdf4Converter/CTeSSLaCANStream.h"
 
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
