@@ -11,6 +11,7 @@ public:
 	CTeSSLaStreamEvent(CTeSSLaStream* owner, unsigned long timeStamp);
 	virtual ~CTeSSLaStreamEvent() {};
 	unsigned long getTimeStamp();
+	CTeSSLaStream* getOwner() { return mOwner; };
 	virtual std::string toString();
 protected:
 	unsigned long mTimeStamp;
@@ -52,11 +53,15 @@ public:
 	virtual ~CTeSSLaStream();
 	std::string getName() { return mName; };
 	std::vector<CTeSSLaStreamEvent*> getEntries() { return mvEntries; };
+
+	CTeSSLaStreamEvent* getNextOutputEvent();
 protected:
 	CTeSSLaStream() {};
 	std::string mName;
 	std::vector<CTeSSLaStreamEvent*> mvEntries;
 	void insertEntry(CTeSSLaStreamEvent* entry);
+private:
+	unsigned long currentOutputIndex = 0;
 };
 
 class CTeSSLaStreamVoid : public CTeSSLaStream

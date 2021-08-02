@@ -37,6 +37,15 @@ void CTeSSLaStream::insertEntry(CTeSSLaStreamEvent* entry)
 	this->mvEntries.push_back(entry);
 }
 
+CTeSSLaStreamEvent* CTeSSLaStream::getNextOutputEvent()
+{
+	if (currentOutputIndex >= mvEntries.size())
+		return NULL;
+	CTeSSLaStreamEvent* res = mvEntries[currentOutputIndex];
+	currentOutputIndex++;
+	return res;
+}
+
 void CTeSSLaStreamVoid::addEntry(CTeSSLaStreamEventVoid* entry)
 { 
 	insertEntry(entry);
@@ -54,7 +63,7 @@ void CTeSSLaStreamFloat::addEntry(CTeSSLaStreamEventFloat* entry)
 
 
 unsigned long CTeSSLaStreamEvent::getTimeStamp()
-{
+{	
 	return mTimeStamp;
 };
 
